@@ -12,6 +12,9 @@ Huiting FENG
 ```
 ## Architectural Diagram
 
+![image](https://github.com/Incalenn/project-software-architectures/assets/73129627/c58d1ce7-aea4-4024-8725-0ea3db0eb802)
+
+
 ## User Interface (UI) Layer:
 
 Customer UI: This interface allows customers to select products, place orders, and make payments. It communicates directly with application layer services such as order management and payment service.
