@@ -9,6 +9,7 @@ Senhua LIU
 Jonathan EL BAZ
 Camille FOUR
 Huiting FENG
+Hermann HUANG
 ```
 ## Architectural Diagram
 
