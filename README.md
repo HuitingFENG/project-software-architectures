@@ -51,3 +51,25 @@ Email Service: Used by the notification service to send emails to customers and 
 Security: Measures are implemented at all levels to protect data, ensure secure transactions, and manage user authentication and authorization.
 
 Scalability: Ensures that services can handle increased loads, which may involve load balancing, horizontal scaling, and efficient database management.
+
+
+## Tools
+-   NodeJS
+    - Express
+    - Fastify
+    - NestJS
+-   Postman
+
+## References
+```
+https://engcfraposo.medium.com/enhance-modularity-in-nestjs-using-the-strategy-pattern-a2863b82a1dd
+```
+```
+https://medium.com/@wteja/mastering-dependency-injection-in-nestjs-61795d0b8fb7
+```
+```
+https://moaw.dev/workshop/?src=gh%3Aazure-samples%2Fnodejs-microservices%2Fmain%2Fdocs%2F&step=6#
+```
+```
+https://github.com/Azure-Samples/nodejs-microservices
+```
