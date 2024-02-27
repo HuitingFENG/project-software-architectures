@@ -1,0 +1,34 @@
+{
+    "apps": [
+        {
+            "name": "user-service",
+            "script": "nodemon",
+            "args": "backend/user-service/index.js"
+        },
+        {
+            "name": "order-management",
+            "script": "nodemon",
+            "args": "backend/order-management-service/index.js"
+        },
+        {
+            "name": "product-catalogue-service",
+            "script": "nodemon",
+            "args": "backend/product-catalogue-service/index.js"
+        },
+        {
+            "name": "payment-service",
+            "script": "nodemon",
+            "args": "backend/payment-service/index.js"
+        },
+        {
+            "name": "notification-service",
+            "script": "nodemon",
+            "args": "backend/notification-service/index.js"
+        },
+        {
+            "name": "session-management-service",
+            "script": "nodemon",
+            "args": "backend/session-management-service/index.js"
+        }
+    ]
+}
