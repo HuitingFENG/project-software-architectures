@@ -67,7 +67,7 @@ Scalability: Ensures that services can handle increased loads, which may involve
 
 ## Implementation Steps
 - Define Microservices: Based on the use cases, define the microservices, their APIs, and how they interact.
-- Database Design: Each microservice should have its own database to ensure loose coupling. Choose a database based on the service's needs. The choice of databases should be driven by the specific needs of each microservice, including data structure, access patterns, scalability requirements, and transactional guarantees.
+- Database Design: Each microservice should have its own database to ensure loose coupling. Choose a database based on the service's needs. The choice of databases should be driven by the specific needs of each microservice, including data structure, access patterns, scalability requirements, and transactional guarantees. Align with the principles of microservices architecture, we provide each service with its own datastore, which helps to ensure loose coupling and independent scalability.
 - Implement Services: For fast prototyping, Express or Fastify can be used for microservices that require high performance and minimal overhead. NestJS is recommended for services with complex business logic or those benefiting from its architecture (e.g., Order Management and Payment Services) due to its modularity and integration capabilities with other services and databases.
 - API Gateway: Implement an API Gateway as the single entry point for the frontend, routing requests to the appropriate microservice.
 - Inter-service Communication: Use asynchronous messaging (Kafka) for loose coupling between services, especially for notifications and updates.
@@ -100,6 +100,15 @@ Scalability: Ensures that services can handle increased loads, which may involve
 - Vite: A modern frontend build tool that significantly improves the development experience. Vite leverages native ES modules for lightning-fast server start and hot module replacement (HMR). It's compatible with Vue.js, React, Svelte, and vanilla JavaScript, making it a versatile choice for developing the project's frontend aspects, even though the primary focus is on the backend.
 - JWT: an open standard for securely transmitting information between parties as a JSON object. This information is digitally signed, allowing it to be verified and trusted. The JWT structure consists of three parts: the header, the payload, and the signature.
 - Kafka: an open-source stream-processing software platform developed by LinkedIn and donated to the Apache Software Foundation. It's designed to provide a unified, high-throughput, low-latency platform for handling real-time data feeds.
+
+### Database
+- MongoDB: a NoSQL database that is good for handling large volumes of distributed data. It is flexible and allows for quick iterations, which can be beneficial during the development phase of user-service. It also handles unstructured data well, which is common in user profiles, preferences, etc. 
+- Relational Databases (MySQL/PostgreSQL): Good to ensure ACID (atomicity, consistency, isolation, durability) properties. They are suitable for services where data integrity and complex transactions are critical, such as payment or order services. As for DynamoDB, it is ideal for caching frequently accessed data or for services that require fast reads and writes and can work with a simpler data model.
+
+### Postman Collection for testing
+```
+https://api.postman.com/collections/33244117-5d00032f-64f8-4563-81f5-c225e81ee130?access_key=PMAT-01HQNR5WFGFG97JEXNPY83F2QZ
+```
 
 # Implementation Steps
 ```
