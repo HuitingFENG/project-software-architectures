@@ -3,32 +3,38 @@
         {
             "name": "user-service",
             "script": "nodemon",
-            "args": "backend/user-service/index.js"
+            "args": "backend/user-service/index.js",
+            "interpreter": "/Users/fenghuiting/.nvm/versions/node/v16.20.2/bin/node"
         },
         {
             "name": "order-management",
             "script": "nodemon",
-            "args": "backend/order-management-service/index.js"
+            "args": "backend/order-management-service/index.js",
+            "interpreter": "/Users/fenghuiting/.nvm/versions/node/v16.20.2/bin/node"
         },
         {
             "name": "product-catalogue-service",
             "script": "nodemon",
-            "args": "backend/product-catalogue-service/index.js"
+            "args": "backend/product-catalogue-service/index.js",
+            "interpreter": "/Users/fenghuiting/.nvm/versions/node/v16.20.2/bin/node"
         },
         {
             "name": "payment-service",
-            "script": "nodemon",
-            "args": "backend/payment-service/index.js"
+            "script": "ts-node",
+            "args": "backend/payment-service/src/main.ts",
+            "interpreter": "/Users/fenghuiting/.nvm/versions/node/v16.20.2/bin/node"
         },
         {
             "name": "notification-service",
             "script": "nodemon",
-            "args": "backend/notification-service/index.js"
+            "args": "backend/notification-service/index.js",
+            "interpreter": "/Users/fenghuiting/.nvm/versions/node/v16.20.2/bin/node"
         },
         {
             "name": "session-management-service",
             "script": "nodemon",
-            "args": "backend/session-management-service/index.js"
+            "args": "backend/session-management-service/index.js",
+            "interpreter": "/Users/fenghuiting/.nvm/versions/node/v16.20.2/bin/node"
         }
     ]
 }
