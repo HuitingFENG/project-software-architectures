@@ -2,16 +2,30 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const bcrypt = require('bcrypt');
+
 
 // Endpoint to register a new user
 router.post('/register', async (req, res) => {
-  try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).send({ user: newUser, message: 'User registered successfully' });
-  } catch (error) {
+    try {
+        const newUser = new User(req.body);
+        await newUser.save();
+        // res.status(201).send({ user: newUser, message: 'User registered successfully' });
+        res.status(201).send({ 
+            user: {
+                id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                phone: newUser.phone,
+                role: newUser.role,
+                qrCode: newUser.qrCode,
+                parkId: newUser.parkId,
+            }, 
+            message: 'User registered successfully' 
+        });
+    } catch (error) {
     res.status(400).send(error);
-  }
+    }
 });
 
 // Endpoint to retrieve all users

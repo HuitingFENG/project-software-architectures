@@ -4,16 +4,16 @@ import { CreatePaymentDto } from './dto/create-payment.dto';
 import { Payment } from './models/payment.model';
 
 
-@Controller()
+@Controller('payments')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get('payments')
+  @Get()
   async getAllPayments(): Promise<Payment[]> {
     return this.appService.getAllPayments();
   }
 
-  @Post('payments')
+  @Post()
   async createPayment(@Body() paymentData: CreatePaymentDto) {
     return this.appService.createPayment(paymentData);
   }
