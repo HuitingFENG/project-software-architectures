@@ -46,9 +46,9 @@ Product Database: Keeps details of products, accessed by the product catalog ser
 
 ## External Integrations:
 
-Payment Gateway (like Stripe): Used by the payment service to handle online transactions securely and return the status to the payment service.
+Payment Gateway (Stripe): Used by the payment service to handle online transactions securely and return the status to the payment service.
 
-Email Service: Used by the notification service to send emails to customers and agents, acting as an email dispatcher.
+Email Service (Websocket): Used by the notification service to send emails to customers and agents, acting as an email dispatcher.
 
 ## Other Considerations:
 
@@ -89,6 +89,8 @@ Scalability: Ensures that services can handle increased loads, which may involve
 -   Kafka
 -   Docker
 -   Kubernetes
+-   Stripe
+-   Websocket
 
 
 ### Node.js Frameworks:

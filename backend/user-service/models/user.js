@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     qrCode: { type: String, default: '' },
     parkId: { type: String, default: '' }, // Park ID if applicable for agents
     // Orders array to keep track of user orders
-    orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }] // Assuming there is an Order model
+    // orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }] // Assuming there is an Order model
   }, { timestamps: true }); // Add timestamps for record keeping
 
 const User = mongoose.model('User', userSchema);
