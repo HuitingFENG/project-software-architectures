@@ -11,9 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "fastify": "^4.26.1",
     "fastify-cors": "^6.1.0",
-    "fastify-plugin": "^4.5.1"
+    "fastify-plugin": "^4.5.1",
+    "mongoose": "^8.2.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
