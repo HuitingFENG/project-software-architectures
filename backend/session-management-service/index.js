@@ -1,14 +1,23 @@
+require('dotenv').config();
+const mongoose = require('mongoose');
 const fastify = require('fastify')({ logger: true });
+const sessionRoutes = require('./routes/sessionRoutes');
 
-// fastify.post('/send-notification', async (request, reply) => {
-//   return { success: true, message: 'Notification sent successfully!' };
-// });
+// MongoDB Connection
+mongoose.connect(process.env.MONGO_URI, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true 
+})
+.then(() => console.log('MongoDB connected...'))
+.catch(err => console.log(err));
+
+// Register the routes plugin
+fastify.register(sessionRoutes);
 
 fastify.get('/test', async (request, reply) => {
     return { success: true, message: 'Test route is working correctly!' };
 });
 
-// Run the server!
 const start = async () => {
   try {
     await fastify.listen({ port: 3005 });
@@ -19,5 +28,4 @@ const start = async () => {
     process.exit(1);
   }
 };
-
 start();

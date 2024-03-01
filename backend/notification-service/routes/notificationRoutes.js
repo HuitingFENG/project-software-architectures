@@ -1,6 +1,4 @@
 // notification-service/routes/notificationRoutes.js
-// const express = require('express');
-// const router = express.Router();
 const Notification = require('../models/notification');
 
 async function notificationRoutes(fastify, options) {
@@ -8,7 +6,7 @@ async function notificationRoutes(fastify, options) {
       try {
         const newNotification = new Notification(request.body);
         await newNotification.save();
-        reply.code(201).send({ notification: newNotification, message: 'Notification registered successfully' });
+        reply.code(201).send({ notification: newNotification, message: 'Notification added successfully' });
       } catch (error) {
         reply.code(400).send(error);
       }
@@ -70,8 +68,8 @@ async function notificationRoutes(fastify, options) {
         reply.code(500).send({ error: error.message });
       }
     });
-  }
-  
+}
+
 module.exports = notificationRoutes;
 
 
