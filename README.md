@@ -57,12 +57,12 @@ Security: Measures are implemented at all levels to protect data, ensure secure 
 Scalability: Ensures that services can handle increased loads, which may involve load balancing, horizontal scaling, and efficient database management.
 
 ## Proposed Architecture Overview
-- User Service (Express): Manages user accounts, authentication, and authorization.
-- Product Catalog Service (Express): Manages the product catalog, including adding, updating, and removing products.
-- Order Management Service (Express): Handles order creation, modification, and querying.
-- Payment Service (NestJS): Integrates with external payment gateways (e.g., Stripe) to process payments.
-- Notification Service (Fastify): Sends notifications and updates to users' smartphones and handles email delivery.
-- Session Management Service (Fastify): Manages bowling alley sessions and QR code associations.
+- User Service (Express, MongoDB): Manages user accounts, authentication, and authorization.
+- Product Catalog Service (Express, MongoDB): Manages the product catalog, including adding, updating, and removing products.
+- Order Management Service (Express, Sequelize, PostgreSQL): Handles order creation, modification, and querying.
+- Payment Service (NestJS, Sequelize, PostgreSQL): Integrates with external payment gateways (e.g., Stripe) to process payments.
+- Notification Service (Fastify, MongoDB): Sends notifications and updates to users' smartphones and handles email delivery.
+- Session Management Service (Fastify, MongoDB): Manages bowling alley sessions and QR code associations.
 
 
 ## Implementation Steps
