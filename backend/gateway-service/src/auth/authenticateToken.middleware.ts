@@ -3,18 +3,21 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { TokenSessionService } from '../token-session/token-session.service'; // You will need to create this service
+import { TokenSessionService } from '../token-session/token-session.service'; 
 
 @Injectable()
 export class AuthenticateTokenMiddleware implements NestMiddleware {
   constructor(private readonly tokenSessionService: TokenSessionService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
+    console.log('Request path:', req.path);
+    console.log('Middleware applied to:', req.path);
+
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(' ')[1];
 
     if (!token) {
-      return res.status(401).json({ message: 'Authentication token is missing.' });
+      return res.status(401).json({ message: 'Authentication token is missing. - message from ATM' });
     }
 
     try {

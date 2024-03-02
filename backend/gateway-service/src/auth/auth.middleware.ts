@@ -8,7 +8,7 @@ export class AuthMiddleware implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.split(' ')[1];
     if (!token) {
-      throw new HttpException('Authentication token is missing', HttpStatus.UNAUTHORIZED);
+      throw new HttpException('Authentication token is missing - AM', HttpStatus.UNAUTHORIZED);
     }
 
     try {
