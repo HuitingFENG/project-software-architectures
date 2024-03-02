@@ -34,6 +34,10 @@ export class GatewayController {
     @UseGuards(AuthGuard('jwt'))
     async startSession(@Body() body, @Req() req) {
         console.log("Start-session route hit");
+        console.log("req.user.id: ", req.user.id);
+        console.log("req.user.name: ", req.user.name);
+        console.log("req.user.email: ", req.user.email);
+
         const { qrCode } = body;
 
         const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
@@ -42,7 +46,7 @@ export class GatewayController {
             throw new HttpException('Invalid QR Code', HttpStatus.BAD_REQUEST);
         } else {
             const sessionResponse = await this.httpService.post(`${sessionManagementServiceUrl}/sessions/add`, {
-                customerId: [ req.user._id ],
+                customers: [ req.user.id ],
                 qrCode,
                 orders: [],
                 status: 'active'
@@ -52,17 +56,18 @@ export class GatewayController {
     }
 
     
+    @Post('close-session')
+    @UseGuards(AuthGuard('jwt'))
+    async closeSession(@Body() body, @Req() req) {
+        console.log("Close-session route hit");
+        const { sessionId } = body;
+        const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const closeSessionResponse = await this.httpService.put(`${sessionManagementServiceUrl}/sessions/${sessionId}`, {
+            status: 'closed'
+        }).toPromise();
 
-    // @Post('close-session')
-    // @UseGuards(AuthGuard('jwt'))
-    // async closeSession(@Body() body, @Req() req) {
-    //     const { sessionId } = body;
-    //     const closeSessionResponse = await this.httpService.put(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/${sessionId}`, {
-    //         status: 'closed'
-    //     }).toPromise();
-
-    //     return closeSessionResponse.data;
-    // }
+        return closeSessionResponse.data;
+    }
     
 
 

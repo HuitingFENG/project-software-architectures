@@ -96,11 +96,11 @@ router.post('/login', async (req, res) => {
   
       // Create a token
       const token = jwt.sign(
-        { userId: user._id, email: user.email, role: user.role },
+        { id: user._id, name: user.name, email: user.email, phone: user.phone, role: user.role, parkId: user.parkId, parkLocation: user.parkLocation },
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
-  
+      console.log("token: ", token);
       res.send({ token });
     } catch (error) {
       res.status(500).send({ message: 'Authentication failed', error: error.message });
