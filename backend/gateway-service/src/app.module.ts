@@ -7,6 +7,9 @@ import { HttpModule } from '@nestjs/axios';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/roles.guard';
 import { ConfigModule } from '@nestjs/config';
+import { TokenSessionModule } from './token-session/token-session.module';
+import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
+import { AuthenticateTokenMiddleware } from './auth/authenticateToken.middleware';
 
 @Module({
   imports: [
@@ -15,6 +18,7 @@ import { ConfigModule } from '@nestjs/config';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    TokenSessionModule,
   ],
   controllers: [AppController],
   providers: [
@@ -25,4 +29,10 @@ import { ConfigModule } from '@nestjs/config';
     // },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthenticateTokenMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
