@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthMiddleware } from '../auth/auth.middleware';
-
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class GatewayController {
@@ -52,30 +52,37 @@ export class GatewayController {
         return sessionManagementServiceUrl;
         }
     }
+
+
+    
+
     
     @Post('start-session')
-    @UseGuards(AuthMiddleware) 
+    // @UseGuards(AuthMiddleware) 
+    @UseGuards(AuthGuard('jwt'))
     async startSession(@Body() body, @Req() req) {
+       
         const { qrCode } = body;
-        const user = req.user;
+        // const user = req.user;
 
         const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
         const validAlleyResponse = await this.httpService.get(`${sessionManagementServiceUrl}/sessions/getCatalogForQRCode`, { params: { qrCode } }).toPromise();
         if (!validAlleyResponse.data.isValid) {
             throw new HttpException('Invalid QR Code', HttpStatus.BAD_REQUEST);
+        } else {
+            const sessionResponse = await this.httpService.post(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/add`, {
+                customerId: [ req.user._id ],
+                qrCode,
+                orders: [],
+                status: 'active'
+            }).toPromise();
+            return sessionResponse.data;
         }
-
-        const sessionResponse = await this.httpService.post(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/add`, {
-            customerId: user.userId,
-            qrCode,
-            status: 'active'
-        }).toPromise();
-
-        return sessionResponse.data;
     }
 
     @Post('close-session')
-    @UseGuards(AuthMiddleware) 
+    // @UseGuards(AuthMiddleware) 
+    @UseGuards(AuthGuard('jwt'))
     async closeSession(@Body() body, @Req() req) {
         const { sessionId } = body;
         const closeSessionResponse = await this.httpService.put(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/${sessionId}`, {

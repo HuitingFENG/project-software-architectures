@@ -65,6 +65,12 @@ Scalability: Ensures that services can handle increased loads, which may involve
 - Session Management Service (Fastify, MongoDB): Manages bowling alley sessions and QR code associations.
 
 
+### Explanations for some services
+A Session model could have a list of customerIds and a list of orderIds. The session begins when a customer scans the QR code and is marked as active. The session can either be for a single customer or a group of customers who join the session by scanning the same QR code.
+Each Order would be associated with a customerId and a sessionId, allowing for tracking individual orders within a shared session.
+
+
+
 ## Implementation Steps
 - Define Microservices: Based on the use cases, define the microservices, their APIs, and how they interact.
 - Database Design: Each microservice should have its own database to ensure loose coupling. Choose a database based on the service's needs. The choice of databases should be driven by the specific needs of each microservice, including data structure, access patterns, scalability requirements, and transactional guarantees. Align with the principles of microservices architecture, we provide each service with its own datastore, which helps to ensure loose coupling and independent scalability.
@@ -106,6 +112,8 @@ Scalability: Ensures that services can handle increased loads, which may involve
 ### Database
 - MongoDB: a NoSQL database that is good for handling large volumes of distributed data. It is flexible and allows for quick iterations, which can be beneficial during the development phase of user-service. It also handles unstructured data well, which is common in user profiles, preferences, etc. 
 - Relational Databases (MySQL/PostgreSQL): Good to ensure ACID (atomicity, consistency, isolation, durability) properties. They are suitable for services where data integrity and complex transactions are critical, such as payment or order services. As for DynamoDB, it is ideal for caching frequently accessed data or for services that require fast reads and writes and can work with a simpler data model.
+
+
 
 ### Postman Collection for testing
 ```
