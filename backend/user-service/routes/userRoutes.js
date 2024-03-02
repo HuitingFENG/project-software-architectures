@@ -28,6 +28,22 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// Endpoint to validate the user
+router.post('/validate', async (req, res) => {
+    const { email, password } = req.body;
+    try {
+      const user = await User.findOne({ email }).exec();
+      if (user && bcrypt.compareSync(password, user.password)) {
+        res.json({ isValid: true, userId: user._id });
+      } else {
+        res.json({ isValid: false });
+      }
+    } catch (error) {
+      res.status(500).json({ message: 'Error validating user', error: error.message });
+    }
+  });
+
+
 // Endpoint to retrieve all users
 router.get('/', async (req, res) => {
   try {
