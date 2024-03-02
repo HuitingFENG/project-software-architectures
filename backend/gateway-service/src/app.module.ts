@@ -10,9 +10,27 @@ import { ConfigModule } from '@nestjs/config';
 import { TokenSessionModule } from './token-session/token-session.module';
 import { MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { AuthenticateTokenMiddleware } from './auth/authenticateToken.middleware';
+import { AuthMiddleware } from './auth/auth.middleware';
+import { DataSourceOptions } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+
+
+const dataSourceConfig: DataSourceOptions = {
+  type: 'postgres',
+  host: 'localhost',
+  port: 5432,
+  username: 'root',
+  password: 'root',
+  database: 'orderservice',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true, 
+};
+
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot(dataSourceConfig),
     GatewayModule, 
     AuthModule,
     ConfigModule.forRoot({
@@ -22,11 +40,11 @@ import { AuthenticateTokenMiddleware } from './auth/authenticateToken.middleware
   ],
   controllers: [AppController],
   providers: [
-    AppService
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: RolesGuard,
-    // },
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule {

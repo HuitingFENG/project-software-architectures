@@ -11,6 +11,17 @@ async function sessionRoutes(fastify, options) {
         reply.code(400).send(error);
       }
     });
+
+    fastify.get('/sessions/getCatalogForQRCode', async (request, reply) => {
+        try {
+          const { qrCode } = request.query; // GET /sessions/getCatalogForQRCode?qrCode=yourQRCodeHere
+          const existingSession = await Session.findOne({ qrCode, status: 'active' });
+          const isValid = !existingSession;  // If there's no active session, the QR code is valid for use
+          reply.send({ isValid });
+        } catch (error) {
+          reply.code(500).send({ error: error.message });
+        }
+    });
   
     fastify.get('/sessions', async (request, reply) => {
       try {
