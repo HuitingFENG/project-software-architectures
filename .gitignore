@@ -37,8 +37,8 @@ bower_components
 build/Release
 
 # dotenv environment variables file
-# .env
-# .env.test
+.env
+.env.test
 
 # Next.js build output
 .next

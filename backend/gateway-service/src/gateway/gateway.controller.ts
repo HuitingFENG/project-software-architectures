@@ -33,9 +33,8 @@ export class GatewayController {
     @Post('start-session')
     @UseGuards(AuthGuard('jwt'))
     async startSession(@Body() body, @Req() req) {
-        console.log("Starting session...");
+        console.log("Start-session route hit");
         const { qrCode } = body;
-        // const user = req.user;
 
         const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
         const validAlleyResponse = await this.httpService.get(`${sessionManagementServiceUrl}/sessions/getCatalogForQRCode`, { params: { qrCode } }).toPromise();
