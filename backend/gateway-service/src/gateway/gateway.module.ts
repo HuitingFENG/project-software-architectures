@@ -9,14 +9,15 @@ import { JwtModule } from '@nestjs/jwt';
   imports: [
     HttpModule,
     ConfigModule.forRoot({ isGlobal: true, }),
-    // JwtModule.registerAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: async (configService: ConfigService) => ({
-    //     secret: configService.get('JWT_SECRET'),
-    //     signOptions: { expiresIn: '1h' },
-    //   }),
-    // }),
+    
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
   ],
   controllers: [GatewayController],
   providers: [GatewayService]

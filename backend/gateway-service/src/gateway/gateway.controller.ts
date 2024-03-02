@@ -12,8 +12,68 @@ export class GatewayController {
     constructor(
         private httpService: HttpService,
         private configService: ConfigService,
-        // private jwtService: JwtService
     ) {}
+
+    @Get('test')
+    testRoute(@Res() res: Response) {
+        console.log('Test route hit'); 
+        res.status(HttpStatus.OK).json({ message: 'This is a test endpoint and does not require authentication' });
+    }
+
+    @Post('login')
+    login(@Body() credentials: any): Observable<any> {
+        console.log('Login route hit');
+        const userServiceUrl = this.configService.get('USER_SERVICE_URL');
+        return this.httpService.post(`${userServiceUrl}/users/login`, credentials)
+            .pipe(
+                map(response => response.data),
+            );
+    }
+
+    @Post('start-session')
+    @UseGuards(AuthGuard('jwt'))
+    async startSession(@Body() body, @Req() req) {
+        console.log("Starting session...");
+        const { qrCode } = body;
+        // const user = req.user;
+
+        const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const validAlleyResponse = await this.httpService.get(`${sessionManagementServiceUrl}/sessions/getCatalogForQRCode`, { params: { qrCode } }).toPromise();
+        if (!validAlleyResponse.data.isValid) {
+            throw new HttpException('Invalid QR Code', HttpStatus.BAD_REQUEST);
+        } else {
+            const sessionResponse = await this.httpService.post(`${sessionManagementServiceUrl}/sessions/add`, {
+                customerId: [ req.user._id ],
+                qrCode,
+                orders: [],
+                status: 'active'
+            }).toPromise();
+            return sessionResponse.data;
+        }
+    }
+
+    
+
+    // @Post('close-session')
+    // @UseGuards(AuthGuard('jwt'))
+    // async closeSession(@Body() body, @Req() req) {
+    //     const { sessionId } = body;
+    //     const closeSessionResponse = await this.httpService.put(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/${sessionId}`, {
+    //         status: 'closed'
+    //     }).toPromise();
+
+    //     return closeSessionResponse.data;
+    // }
+    
+
+
+
+
+
+
+
+
+
 
     @All('*')
     async handleAllRequests(@Req() req: Request, @Res() res: Response) {
@@ -56,56 +116,10 @@ export class GatewayController {
         }
     }
 
-    @Get('test')
-    testRoute(@Res() res: Response) {
-        console.log('Test route hit'); // This should log when the /test route is accessed
-        res.status(HttpStatus.OK).json({ message: 'This is a test endpoint and does not require authentication' });
-    }
+    
 
 
-    @Post('login')
-    login(@Body() credentials: any): Observable<any> {
-        const userServiceUrl = this.configService.get('USER_SERVICE_URL');
-        return this.httpService.post(`${userServiceUrl}/users/login`, credentials)
-            .pipe(
-                map(response => response.data),
-            );
-    }
-
-    @Post('start-session')
-    // @UseGuards(AuthMiddleware) 
-    @UseGuards(AuthGuard('jwt'))
-    async startSession(@Body() body, @Req() req) {
-       
-        const { qrCode } = body;
-        // const user = req.user;
-
-        const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
-        const validAlleyResponse = await this.httpService.get(`${sessionManagementServiceUrl}/sessions/getCatalogForQRCode`, { params: { qrCode } }).toPromise();
-        if (!validAlleyResponse.data.isValid) {
-            throw new HttpException('Invalid QR Code', HttpStatus.BAD_REQUEST);
-        } else {
-            const sessionResponse = await this.httpService.post(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/add`, {
-                customerId: [ req.user._id ],
-                qrCode,
-                orders: [],
-                status: 'active'
-            }).toPromise();
-            return sessionResponse.data;
-        }
-    }
-
-    @Post('close-session')
-    // @UseGuards(AuthMiddleware) 
-    @UseGuards(AuthGuard('jwt'))
-    async closeSession(@Body() body, @Req() req) {
-        const { sessionId } = body;
-        const closeSessionResponse = await this.httpService.put(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/${sessionId}`, {
-            status: 'closed'
-        }).toPromise();
-
-        return closeSessionResponse.data;
-    }
+    
 
 
 

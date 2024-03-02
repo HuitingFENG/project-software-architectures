@@ -4,10 +4,11 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { TokenSessionService } from '../token-session/token-session.service'; 
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthenticateTokenMiddleware implements NestMiddleware {
-  constructor(private readonly tokenSessionService: TokenSessionService) {}
+  constructor(private readonly tokenSessionService: TokenSessionService, private configService: ConfigService,) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     console.log('Request path:', req.path);
@@ -21,7 +22,9 @@ export class AuthenticateTokenMiddleware implements NestMiddleware {
     }
 
     try {
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log("decoded: ", decoded);
       req.user = decoded;
       next();
     } catch (err) {
