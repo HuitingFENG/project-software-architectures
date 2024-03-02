@@ -3,19 +3,23 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const SALT_WORK_FACTOR = 10;
 
+const alleySchema = new mongoose.Schema({
+    alleyNumber: Number, 
+    qrCode: { type: String, required: true } 
+  });
+  
+
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, unique: true, required: true },
-    phone: { type: String, unique: true, sparse: true }, // Sparse allows for unique but optional fields
-    password: { type: String, required: true }, // Password should be hashed in production
-    // Role to distinguish between customer and agent
+    phone: { type: String, unique: true, sparse: true },
+    password: { type: String, required: true }, 
     role: { type: String, enum: ['customer', 'agent'], required: true },
-    // QR code for session identification (if applicable)
-    qrCode: { type: String, default: '' },
-    parkId: { type: String, default: '' }, // Park ID if applicable for agents
-    // Orders array to keep track of user orders
-    // orders: [{ type: Schema.Types.ObjectId, ref: 'Order' }] // Assuming there is an Order model
-}, { timestamps: true }); // Add timestamps for record keeping
+    // qrCode: { type: String, default: '' },  
+    parkId: { type: String, default: '' }, 
+    parkLocation: { type: String, default: '' }, 
+    alleys: [alleySchema],
+}, { timestamps: true }); 
 
 
 // // Pre-save hook to hash the password
@@ -40,10 +44,19 @@ const userSchema = new mongoose.Schema({
 //     });
 // });
 
+
 userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {
-      this.password = await bcrypt.hash(this.password, 8);
+      this.password = await bcrypt.hash(this.password, SALT_WORK_FACTOR);
     }
+
+    if (this.role === 'agent' && this.isNew) {
+        this.alleys = Array.from({ length: 20 }, (_, index) => ({
+            alleyNumber: index + 1,
+            qrCode: `QR-${this.parkId}-${this.parkLocation}-${index + 1}`
+        }));
+    }
+
     next();
 });
   

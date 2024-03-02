@@ -25,9 +25,28 @@ const authenticateToken = (req, res, next) => {
 // Endpoint to register a new user
 router.post('/register', async (req, res) => {
     try {
-        const newUser = new User(req.body);
-        await newUser.save();
+        // const newUser = new User(req.body);
+        // await newUser.save();
         // res.status(201).send({ user: newUser, message: 'User registered successfully' });
+        const { role, parkId, parkLocation, ...userData } = req.body;
+        const newUser = new User(req.body);
+
+        // Check if the role is 'agent' and parkId and parkLocation are provided
+        if (role === 'agent') {
+            if (!parkId || !parkLocation) {
+                return res.status(400).send({ message: 'Park ID and Park Location are required for agents.' });
+            }
+            newUser.parkId = parkId;
+            newUser.parkLocation = parkLocation;
+            // Automatically create 20 alleys for the agent
+            newUser.alleys = Array.from({ length: 20 }, (_, index) => ({
+                alleyNumber: index + 1,
+                qrCode: `QR-${parkId}-${parkLocation}-${index + 1}`
+            }));
+        }
+
+        await newUser.save();
+
         res.status(201).send({ 
             user: {
                 id: newUser._id,
@@ -35,8 +54,13 @@ router.post('/register', async (req, res) => {
                 email: newUser.email,
                 phone: newUser.phone,
                 role: newUser.role,
-                qrCode: newUser.qrCode,
-                parkId: newUser.parkId,
+                // qrCode: newUser.qrCode,
+                // parkId: newUser.parkId,
+                ...(role === 'agent' && { 
+                    parkId: newUser.parkId,
+                    parkLocation: newUser.parkLocation,
+                    alleys: newUser.alleys,
+                }),
             }, 
             message: 'User registered successfully' 
         });
@@ -122,11 +146,33 @@ router.get('/email/:email', async (req, res) => {
 // PUT /users/:id to update a user by id
 router.put('/:id', async (req, res) => {
     try {
-      const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      if (!user) {
+    //   const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    //   if (!user) {
+    //     return res.status(404).send({ message: 'User not found' });
+    //   }
+    //   res.send({ user, message: 'User updated successfully' });
+
+    const { parkId, parkLocation, role, ...updateData } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) {
         return res.status(404).send({ message: 'User not found' });
-      }
-      res.send({ user, message: 'User updated successfully' });
+    }
+    if (role === 'agent' && parkId && parkLocation) {
+        user.parkId = parkId;
+        user.parkLocation = parkLocation;
+        if (!user.alleys || user.alleys.length === 0) {
+            user.alleys = Array.from({ length: 20 }, (_, index) => ({
+                alleyNumber: index + 1,
+                qrCode: `QR-${parkId}-${parkLocation}-${index + 1}`
+            }));
+        }
+    }
+    for (const [key, value] of Object.entries(updateData)) {
+        user[key] = value;
+    }
+    await user.save();
+    res.send({ user: user.toObject(), message: 'User updated successfully' });
+
     } catch (error) {
       res.status(400).send({ error: error.message });
     }
