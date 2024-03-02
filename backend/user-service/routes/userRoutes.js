@@ -1,8 +1,25 @@
 // user-service/routes/userRoutes.js
+require('dotenv').config();
 const express = require('express');
-const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const router = express.Router();
+
+const JWT_SECRET = process.env.JWT_SECRET; 
+const JWT_EXPIRES_IN = '1h'; 
+const authenticateToken = (req, res, next) => {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; 
+  
+    if (token == null) return res.sendStatus(401);
+  
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+      if (err) return res.sendStatus(403);
+      req.user = user;
+      next();
+    });
+};
 
 
 // Endpoint to register a new user
@@ -41,8 +58,30 @@ router.post('/validate', async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Error validating user', error: error.message });
     }
-  });
+});
 
+// Endpoint to handle login
+router.post('/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email }).exec();
+  
+      if (!user || !bcrypt.compareSync(password, user.password)) {
+        return res.status(401).send({ message: 'Invalid credentials' });
+      }
+  
+      // Create a token
+      const token = jwt.sign(
+        { userId: user._id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRES_IN }
+      );
+  
+      res.send({ token });
+    } catch (error) {
+      res.status(500).send({ message: 'Authentication failed', error: error.message });
+    }
+});
 
 // Endpoint to retrieve all users
 router.get('/', async (req, res) => {

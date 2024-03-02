@@ -1,13 +1,24 @@
 // product-service/routes/productRoutes.js
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
+const authenticateToken = require('../middleware/authenticateToken');
+const verifyAgent = require('../middleware/verifyAgent');
+
+// Middleware to verify if the user is an agent
+// const verifyAgent = (req, res, next) => {
+//     if (!req.user || req.user.role !== 'agent') {
+//       return res.status(403).json({ message: 'Access denied' });
+//     }
+//     next();
+// };
 
 // Endpoint to add a new product
-router.post('/add', async (req, res) => {
+router.post('/add', authenticateToken, verifyAgent, async (req, res) => {
   try {
     const newProduct = new Product(req.body);
-    await newProduct .save();
+    await newProduct.save();
     res.status(201).send({ product: newProduct, message: 'Product added successfully' });
   } catch (error) {
     res.status(400).send(error);
@@ -15,7 +26,7 @@ router.post('/add', async (req, res) => {
 });
 
 // Endpoint to retrieve all products
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
     const products = await Product.find({});
     res.send(products);
@@ -25,7 +36,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /products/:id to retrieve a product by their ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', authenticateToken,  async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) {
@@ -38,7 +49,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // GET /products/category/:categoryName to retrieve products by their category
-router.get('/category/:categoryName', async (req, res) => {
+router.get('/category/:categoryName', authenticateToken, async (req, res) => {
     try {
         const products = await Product.find({ category: req.params.categoryName });
         if (products.length === 0) {
@@ -51,7 +62,7 @@ router.get('/category/:categoryName', async (req, res) => {
 });
 
 // PUT /products/:id to update a product by id
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, verifyAgent, async (req, res) => {
     try {
       const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
       if (!product) {
@@ -64,7 +75,7 @@ router.put('/:id', async (req, res) => {
 });
   
 // DELETE /products/:id to delete a product by id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, verifyAgent, async (req, res) => {
     try {
       const product = await Product.findByIdAndDelete(req.params.id);
       if (!product) {

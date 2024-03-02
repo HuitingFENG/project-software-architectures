@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const authenticateToken = require('./middleware/authenticateToken');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -14,6 +15,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 
 app.use(express.json());
 
+
+app.use(authenticateToken);
 
 app.get('/', (req, res) => {
   res.send('Product Catalog Service');
