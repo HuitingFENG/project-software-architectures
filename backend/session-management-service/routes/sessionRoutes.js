@@ -2,7 +2,7 @@
 const Session = require('../models/session');
 
 async function sessionRoutes(fastify, options) {
-    fastify.post('/add', async (request, reply) => {
+    fastify.post('/sessions/add', async (request, reply) => {
       try {
         const newSession = new Session(request.body);
         await newSession.save();
@@ -12,7 +12,7 @@ async function sessionRoutes(fastify, options) {
       }
     });
   
-    fastify.get('/', async (request, reply) => {
+    fastify.get('/sessions', async (request, reply) => {
       try {
         const sessions = await Session.find({});
         reply.send(sessions);
@@ -21,7 +21,7 @@ async function sessionRoutes(fastify, options) {
       }
     });
   
-    fastify.get('/:id', async (request, reply) => {
+    fastify.get('/sessions/:id', async (request, reply) => {
       try {
         const session = await Session.findById(request.params.id);
         if (!session) {
@@ -33,7 +33,7 @@ async function sessionRoutes(fastify, options) {
       }
     });
   
-    fastify.put('/:id', async (request, reply) => {
+    fastify.put('/sessions/:id', async (request, reply) => {
       try {
         const session = await Session.findByIdAndUpdate(request.params.id, request.body, { new: true });
         if (!session) {
@@ -45,7 +45,7 @@ async function sessionRoutes(fastify, options) {
       }
     });
   
-    fastify.delete('/:id', async (request, reply) => {
+    fastify.delete('/sessions/:id', async (request, reply) => {
       try {
         const session = await Session.findByIdAndDelete(request.params.id);
         if (!session) {

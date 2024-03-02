@@ -29,14 +29,25 @@ export class GatewayController {
   }
 
   private determineServiceUrl(req: Request): string {
+    const userServiceUrl = this.configService.get('USER_SERVICE_URL');
+    const productCatalogServiceUrl = this.configService.get('PRODUCT_CATALOG_SERVICE_URL');
     const orderManagementServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
     const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
+    const notificationServiceUrl = this.configService.get('NOTIFICATION_SERVICE_URL');
+    const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
 
-    if (req.path.startsWith('/orders')) {
+    if (req.path.startsWith('/users')) {
+      return userServiceUrl;
+    } else if (req.path.startsWith('/products')) {
+      return productCatalogServiceUrl;
+    } else if (req.path.startsWith('/orders')) {
       return orderManagementServiceUrl;
     } else if (req.path.startsWith('/payments')) {
       return paymentServiceUrl;
+    } else if (req.path.startsWith('/notifications')) {
+      return notificationServiceUrl;
+    } else if (req.path.startsWith('/sessions')) {
+      return sessionManagementServiceUrl;
     }
-
   }
 }
