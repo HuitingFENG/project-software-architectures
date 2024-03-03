@@ -50,7 +50,7 @@ const Order = sequelize.define('Order', {
     allowNull: false,
   },
 }, {
-    // tableName: 'orders',
+    tableName: 'orders',
     timestamps: true,
 });
 
