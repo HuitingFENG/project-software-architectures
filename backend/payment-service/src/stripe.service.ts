@@ -29,39 +29,50 @@ export class StripeService {
     });
   }
 
-  async payAllOrders( {amount, currency, payment_method, customerId, invoice} ): Promise<any> {
-    const stripeSecretKey = this.configService.get('STRIPE_SECRET_KEY');
-    const stripeUrl = this.configService.get('STRIPE_URL');
-    const headersRequest = {
-        'Authorization': `Bearer ${stripeSecretKey}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-    };
-    
-    const bodyRequest = {
-        amount: amount, 
-        currency: currency,
-        payment_method: payment_method,
-        // payment_method_types: ['card'],
-        // confirm: true,
-        // description: `Payment for session ID ${sessionId} by user ID ${userId} (Email: ${userEmail})`,
-        description: invoice
-    };
-    console.log("bodyRequest: ", bodyRequest);
-    try {
-        const payViaStripe = await this.httpService.post(stripeUrl, stringify(bodyRequest), { headers: headersRequest }).toPromise();
-        console.log("payViaStripe: ", payViaStripe.data);
-        console.log("payViaStripe.data.id: ", payViaStripe.data.id);
-        return payViaStripe.data;
-    } catch (error) {
-        console.error('Stripe payment error:', error);
-        throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
+    async payAllOrders( {amount, currency, payment_method, customerEmail, customerId, description} ): Promise<any> {
+        const stripeSecretKey = this.configService.get('STRIPE_SECRET_KEY');
+        const stripeCreateCustomerUrl = this.configService.get('STRIPE_CREATE_CUSTOMER_URL');
+        const stripeUrl = this.configService.get('STRIPE_URL');
+        const headersRequest = {
+            'Authorization': `Bearer ${stripeSecretKey}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        };
+        const createCustomerRequest = {
+            email: customerEmail,
+        }
+        console.log("description: ", description);
+
+        try {
+            const createCustomerViaStripe = await this.httpService.post(stripeCreateCustomerUrl, stringify(createCustomerRequest), { headers: headersRequest }).toPromise();
+            const customerIdStripe = createCustomerViaStripe.data.id;
+            console.log("customerIdStripe: ", customerIdStripe);
+
+            const bodyRequest = {
+                amount: amount, 
+                currency: currency,
+                payment_method: payment_method,
+                customer: customerIdStripe,
+                description: description
+            };
+            console.log("bodyRequest: ", bodyRequest);
+            try {
+                const payViaStripe = await this.httpService.post(stripeUrl, stringify(bodyRequest), { headers: headersRequest }).toPromise();
+                console.log("payViaStripe: ", payViaStripe.data);
+                console.log("payViaStripe.data.id: ", payViaStripe.data.id);
+                return payViaStripe.data;
+            } catch (error) {
+                console.error('Stripe payment error:', error);
+                throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
+            }
+        } catch (error) {
+            console.error('Stripe payment error:', error);
+            throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
+        }
+
+
     }
-}
 
 
 
-//   async deletePayment(paymentId: string): Promise<any> {
-//     console.log(`Payment with ID ${paymentId} deleted successfully from the database.`);
-//     return { message: `Payment with ID ${paymentId} deleted successfully.` };
-//   }
+
 }

@@ -22,14 +22,10 @@ export class AppController {
 
   @Post('')
   async createStripePayment(@Body() paymentData: any): Promise<any> {
-    const { amount, currency, payment_method, customerId, invoice } = paymentData;
-    return this.stripeService.payAllOrders({ amount, currency, payment_method, customerId, invoice });
+    const { amount, currency, payment_method, customerId, description, customerEmail } = paymentData;
+
+
+    return this.stripeService.payAllOrders({ amount, currency, payment_method, customerId, description, customerEmail });
   }
-
-  // @Delete(':paymentId')
-  // async deletePayment(@Param('paymentId') paymentId: string): Promise<any> {
-  //   return this.stripeService.deletePayment(paymentId);
-  // }
-
 
 }
