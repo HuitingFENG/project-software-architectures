@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, forkJoin, map, mergeMap } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
 @Controller()
@@ -103,7 +103,6 @@ export class GatewayController {
 
         const sessionUpdatePayload = {
             orders: [ orderData.id ], 
-     
         };
         console.log("sessionUpdatePayload: ", sessionUpdatePayload);
 
@@ -121,8 +120,38 @@ export class GatewayController {
         }
     }
 
+    @Get('check-all-orders/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    checkAllOrders(@Param('sessionId') sessionId: string): Observable<any> {
+        console.log("Check-all-orders route hit");
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+        console.log("sessionServiceUrl: ", sessionServiceUrl);
+        console.log("orderServiceUrl: ", orderServiceUrl);
 
+        return this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).pipe(
+            mergeMap(sessionResponse => {
+                const orderIds = sessionResponse.data.orders;
+                if (orderIds.length === 0) {
+                    return [];
+                }
 
+                const orderRequests = orderIds.map(orderId => 
+                    this.httpService.get(`${orderServiceUrl}/orders/${orderId}`).pipe(
+                        map(response => response.data),
+                        catchError(error => {
+                            throw new HttpException(`Failed to fetch order with ID ${orderId}: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+                        })
+                    )
+                );
+
+                return forkJoin(orderRequests); 
+            }),
+            catchError(error => {
+                throw new HttpException(`Failed to fetch session with ID ${sessionId}: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            })
+        );
+    }
 
 
 

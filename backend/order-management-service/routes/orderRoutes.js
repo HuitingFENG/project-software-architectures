@@ -26,6 +26,19 @@ router.get('/orders', async (req, res) => {
     }
 });
 
+router.get('/orders/:id', async (req, res) => {
+    try {
+        const order = await Order.findByPk(req.params.id);
+        // res.json(orders);
+        if (!order) {
+            return res.status(404).send({ message: 'Order not found' });
+        }
+        res.json(order);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 
 router.post('/orders', async (req, res) => {
     try {
@@ -103,6 +116,7 @@ router.post('/orders', async (req, res) => {
 //         res.status(500).json({ error: 'Internal server error' });
 //     }
 // });
+
 
 
 router.patch('/orders/:orderId', async (req, res) => {
