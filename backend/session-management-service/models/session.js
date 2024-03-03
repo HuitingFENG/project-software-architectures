@@ -7,6 +7,7 @@ const sessionSchema = new mongoose.Schema({
     // agentId: { type: String, ref: 'User' },
     qrCode: { type: String, required: true }, 
     status: { type: String, enum: ['vacant', 'active', 'closed'], default: 'vacant' }, 
+    // payments: [{ type: String, ref: 'Payment' }],
 }, { timestamps: true }); 
 
 const Session = mongoose.model('Session', sessionSchema);

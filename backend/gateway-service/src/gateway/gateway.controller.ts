@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable, catchError, forkJoin, map, mergeMap } from 'rxjs';
+import { Observable, catchError, forkJoin, map, mergeMap, of } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
 @Controller()
@@ -152,6 +152,43 @@ export class GatewayController {
             })
         );
     }
+
+    @Get('check-my-own-orders/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    checkMyOwnOrders(@Param('sessionId') sessionId: string, @Req() req): Observable<any> {
+        console.log("Check-my-own-orders route hit");
+        const customerId = req.user.id;
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+        console.log("customerId: ", customerId);
+        console.log("sessionServiceUrl: ", sessionServiceUrl);
+        console.log("orderServiceUrl: ", orderServiceUrl);
+
+        return this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).pipe(
+            mergeMap(sessionResponse => {
+                const session = sessionResponse.data;
+                if (!session.customers.includes(customerId)) {
+                    throw new HttpException("You are not part of this session.", HttpStatus.FORBIDDEN);
+                }
+                const orderRequests = session.orders.map(orderId =>
+                    this.httpService.get(`${orderServiceUrl}/orders/${orderId}`).pipe(
+                        map(orderRes => orderRes.data)
+                    )
+                );
+                return forkJoin(orderRequests);
+            }),
+            map(orders => {
+                const myOrders = orders.filter(order => order.customers.some(customer => customer.id === customerId));
+                return myOrders;
+            }),
+            catchError(error => {
+                throw new HttpException(`Error: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+            })
+        );
+
+    }
+
+
 
 
 

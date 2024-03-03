@@ -33,7 +33,7 @@ const Order = sequelize.define('Order', {
     allowNull: false,
   },
   status: {
-    type: DataTypes.STRING,   // "pending", "completed"
+    type: DataTypes.STRING,   // "pending", "paid"
     allowNull: false,
     defaultValue: "pending"
   },
@@ -49,6 +49,10 @@ const Order = sequelize.define('Order', {
     type: DataTypes.JSON,
     allowNull: false,
   },
+  payments: {
+    type: DataTypes.JSON,
+    allowNull: true,
+  }
 }, {
     tableName: 'orders',
     timestamps: true,
