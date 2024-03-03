@@ -45,8 +45,8 @@ const Order = sequelize.define('Order', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  customerId: {
-    type: DataTypes.STRING,
+  customers: {
+    type: DataTypes.JSON,
     allowNull: false,
   },
 }, {

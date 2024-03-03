@@ -11,6 +11,11 @@ const fetchProductDetails = async (productNumber) => {
     return response.data[0];
 };
 
+const fetchCustomerDetails = async (customerEmail) => {
+    const response = await axios.get(`${process.env.USER_SERVICE_URL}/email/${customerEmail}`);
+    console.log("response.data: ", response.data)
+    return response.data;
+};
 
 router.get('/orders', async (req, res) => {
     try {
@@ -24,9 +29,10 @@ router.get('/orders', async (req, res) => {
 
 router.post('/orders', async (req, res) => {
     try {
-        const { customerId, sessionId, products } = req.body;
+        const { customers, sessionId, products } = req.body;
         let totalPrice = 0;
         const productsDetail = [];
+        const customersDetail = [];
 
         for (const product of products) {
             const productDetail = await fetchProductDetails(product.number);
@@ -42,8 +48,19 @@ router.post('/orders', async (req, res) => {
             });
         }
 
+        for (const customer of customers) {
+            const customerDetail = await fetchCustomerDetails(customer.email);
+            console.log("customerDetail: ", customerDetail);
+            customersDetail.push({
+                id: customerDetail._id, 
+                name: customerDetail.name,
+                email: customerDetail.email,
+                phone: customerDetail.phone,
+            });
+        }
+
         const order = await Order.create({
-            customerId,
+            customers: customersDetail,
             sessionId,
             products: productsDetail,
             totalPrice,
