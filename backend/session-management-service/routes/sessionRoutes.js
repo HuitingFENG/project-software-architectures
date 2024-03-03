@@ -84,7 +84,36 @@ async function sessionRoutes(fastify, options) {
       }
   });
 
-  
+
+    fastify.put('/sessions/:id/add-order', async (request, reply) => {
+      try {
+        const { id } = request.params;
+        const updateData = request.body;
+        const session = await Session.findById(id);
+
+        if (!session) {
+          return reply.code(404).send({ message: 'Session not found' });
+        }
+
+        // Update customers array
+        if (updateData.customers) {
+          session.customers = [...new Set([...session.customers, ...updateData.customers])];
+        }
+
+        // Update orders array
+        if (updateData.orders) {
+          session.orders = [...new Set([...session.orders, ...updateData.orders])];
+        }
+
+        await session.save();
+        reply.send({ session, message: 'Session updated successfully' });
+      } catch (error) {
+        reply.code(400).send({ error: error.message });
+      }
+    });
+
+
+
   
     fastify.delete('/sessions/:id', async (request, reply) => {
       try {

@@ -77,24 +77,56 @@ export class GatewayController {
         }
     }
 
-    // @Patch('sessions/:sessionId/add-members')
-    // @UseGuards(AuthGuard('jwt')) // Ensure the route is protected with JWT Auth Guard
-    // async addMembersToSession(@Param('sessionId') sessionId: string, @Body() updateBody: any, @Req() req: Request, @Res() res: Response) {
-    //     const sessionManagementServiceUrl = process.env.SESSION_MANAGEMENT_SERVICE_URL; // Ensure this environment variable is set
-        
-    //     try {
-    //         // Directly patch the session in the session management service
-    //         const sessionUpdateResponse = await this.httpService.patch(`${sessionManagementServiceUrl}/sessions/${sessionId}`, updateBody).toPromise();
-            
-    //         // Respond with the updated session data
-    //         return res.status(HttpStatus.OK).json(sessionUpdateResponse.data);
-    //     } catch (error) {
-    //         // Handle errors, such as session not found or validation errors from the session management service
-    //         console.error('Failed to update session:', error);
-    //         return res.status(error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR).json(error.response?.data || { message: 'Failed to update session' });
-    //     }
-    // }
-    
+    @Put('/create-order-into-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async createOrderIntoSession(@Param('sessionId') sessionId: string, @Body() orderDetails: any, @Req() req) {
+        console.log("Create-order-into-session route hit");
+        console.log("sessionId, updateBody: ", sessionId, orderDetails);
+
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+        const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        console.log("orderServiceUrl: ", orderServiceUrl);
+        console.log("sessionManagementServiceUrl: ", sessionManagementServiceUrl);
+
+        console.log("orderDetails: ", orderDetails);
+        const orderDetailsPayload = {
+            products: orderDetails.products,
+            customers: [ { "email": req.user.email } ],
+            sessionId: sessionId,
+        }
+        console.log("orderDetailsPayload: ", orderDetailsPayload);
+
+        try {
+        const orderResponse = await this.httpService.post(`${orderServiceUrl}/orders`, orderDetailsPayload).toPromise();
+        const orderData = orderResponse.data;
+        console.log("orderData: ", orderData);
+
+        const sessionUpdatePayload = {
+            orders: [ orderData.id ], 
+     
+        };
+        console.log("sessionUpdatePayload: ", sessionUpdatePayload);
+
+        const sessionUpdateResponse = await this.httpService.put(`${sessionManagementServiceUrl}/sessions/${sessionId}/add-order`, sessionUpdatePayload).toPromise();
+        console.log("sessionUpdateResponse.data: ", sessionUpdateResponse.data);
+
+
+        return {
+            message: 'Order created and added to session successfully',
+            order: orderResponse.data,
+            session: sessionUpdateResponse.data,
+        };
+        } catch (error) {
+        throw new HttpException('Failed to create order or update session', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+
+
+
+
 
 
     @Post('close-session')
