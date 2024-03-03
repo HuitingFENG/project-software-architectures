@@ -6,13 +6,19 @@ import { AuthMiddleware } from '../auth/auth.middleware';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable, catchError, forkJoin, map, mergeMap, of } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
+import Stripe from 'stripe';
 
 @Controller()
 export class GatewayController {
+    stripe: any;
     constructor(
         private httpService: HttpService,
         private configService: ConfigService,
-    ) {}
+    ) {
+        this.stripe = new Stripe(this.configService.get('STRIPE_SECRET'), {
+            apiVersion: '2023-10-16',
+        });
+    }
 
     @Get('test')
     testRoute(@Res() res: Response) {
@@ -185,8 +191,45 @@ export class GatewayController {
                 throw new HttpException(`Error: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
             })
         );
-
     }
+
+
+    @Post('pay-all-orders/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async payAllOrders(@Body() paymentDto: any, @Req() req): Promise<any> {
+        console.log("Pay-all-orders route hit");
+
+        const { sessionId } = req.params;
+        const { amount, method, currency = 'eur' } = paymentDto;
+        const email = req.user.email; 
+        const customerId = req.user.id; 
+      
+        const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
+        console.log("paymentServiceUrl: ", paymentServiceUrl);
+
+        try {
+            const paymentResponse = await this.httpService.post(`${paymentServiceUrl}/payments`, {
+                amount: paymentDto.amount,
+                method: paymentDto.method,
+                currency,
+                customerId: customerId,
+                invoice: `Pay for all orders for sessionId ${sessionId} by customerId ${customerId} (customerEmail : ${email})`,
+            }).toPromise();
+            console.log("paymentResponse: ", paymentResponse);
+            console.log("paymentResponse.data: ", paymentResponse.data);
+            return paymentResponse.data;
+        } catch (error) {
+            throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
+
+
+
+
+
 
 
 

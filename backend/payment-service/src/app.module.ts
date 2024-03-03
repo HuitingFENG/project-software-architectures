@@ -4,6 +4,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { Payment } from './models/payment.model';
+import { StripeService } from './stripe.service';
+
+
 
 @Module({
   imports: [
@@ -21,6 +24,6 @@ import { Payment } from './models/payment.model';
     SequelizeModule.forFeature([Payment]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, StripeService],
 })
 export class AppModule {}

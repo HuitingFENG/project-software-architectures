@@ -14,11 +14,13 @@ export class AppService {
     private paymentModel: typeof Payment,
   ) {}
 
-  async createPayment(data: any): Promise<Payment> {
-    return this.paymentModel.create(data);
-  }
+  // async createPayment(data: any): Promise<Payment> {
+  //   return this.paymentModel.create(data);
+  // }
 
   async getAllPayments(): Promise<Payment[]> {
     return this.paymentModel.findAll();
   }
+
+
 }
