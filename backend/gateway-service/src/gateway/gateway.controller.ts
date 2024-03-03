@@ -200,23 +200,32 @@ export class GatewayController {
         console.log("Pay-all-orders route hit");
 
         const { sessionId } = req.params;
-        const { amount, method, currency = 'eur' } = paymentDto;
+        const { amount } = paymentDto;
         const email = req.user.email; 
         const customerId = req.user.id; 
       
         const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
+        const stripeUrl = this.configService.get('STRIPE_URL');
         console.log("paymentServiceUrl: ", paymentServiceUrl);
 
         try {
+            // const payViaStripe = await this.httpService.post(`${stripeUrl}`, {
+            //     amount: paymentDto.amount,
+            //     currency: "eur",
+            //     payment_method: "pm_card_visa"
+            // }).toPromise();
+            // return payViaStripe.data;
+
             const paymentResponse = await this.httpService.post(`${paymentServiceUrl}/payments`, {
                 amount: paymentDto.amount,
-                method: paymentDto.method,
-                currency,
+                payment_method: "pm_card_visa",
+                currency: "eur",
                 customerId: customerId,
                 invoice: `Pay for all orders for sessionId ${sessionId} by customerId ${customerId} (customerEmail : ${email})`,
             }).toPromise();
             console.log("paymentResponse: ", paymentResponse);
             console.log("paymentResponse.data: ", paymentResponse.data);
+
             return paymentResponse.data;
         } catch (error) {
             throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);

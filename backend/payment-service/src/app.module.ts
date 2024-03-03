@@ -5,11 +5,13 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { Payment } from './models/payment.model';
 import { StripeService } from './stripe.service';
+import { HttpModule, HttpService } from '@nestjs/axios';
 
 
 
 @Module({
   imports: [
+    HttpModule, 
     ConfigModule.forRoot(), 
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -25,5 +27,6 @@ import { StripeService } from './stripe.service';
   ],
   controllers: [AppController],
   providers: [AppService, StripeService],
+  exports: [StripeService],
 })
 export class AppModule {}
