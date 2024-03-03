@@ -1,4 +1,4 @@
-import { Controller, All, Req, Res, HttpStatus, UseGuards, HttpException, Body, Post, Get, Param } from '@nestjs/common';
+import { Controller, All, Req, Res, HttpStatus, UseGuards, HttpException, Body, Post, Get, Param, Patch, Put } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
@@ -43,7 +43,7 @@ export class GatewayController {
         const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
         const validAlleyResponse = await this.httpService.get(`${sessionManagementServiceUrl}/sessions/getCatalogForQRCode`, { params: { qrCode } }).toPromise();
         if (!validAlleyResponse.data.isValid) {
-            throw new HttpException('Invalid QR Code', HttpStatus.BAD_REQUEST);
+            throw new HttpException('Please choose another alley, this alley is active/occupied. - Invalid QR Code', HttpStatus.BAD_REQUEST);
         } else {
             const sessionResponse = await this.httpService.post(`${sessionManagementServiceUrl}/sessions/add`, {
                 customers: [ req.user.id ],
@@ -51,11 +51,52 @@ export class GatewayController {
                 orders: [],
                 status: 'active'
             }).toPromise();
-            return sessionResponse.data;
+            // return sessionResponse.data;
+
+            console.log('Session created with ID:', sessionResponse.data.session._id);
+            return {
+                sessionId: sessionResponse.data.session._id, 
+                message: 'Session started successfully',
+                ...sessionResponse.data
+            };
         }
     }
 
+    @Put('/add-members-into-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async addMembersIntoSession(@Param('sessionId') sessionId: string, @Body() updateBody: any, @Req() req) {
+        console.log("Add-members-into-session route hit");
+        console.log("sessionId, updateBody: ", sessionId, updateBody);
+
+        const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        try {
+            const response = await this.httpService.put(`${sessionManagementServiceUrl}/sessions/${sessionId}`, updateBody).toPromise();
+            return response.data;
+        } catch (error) {
+            throw new HttpException(error.response?.data || 'Failed to update session', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // @Patch('sessions/:sessionId/add-members')
+    // @UseGuards(AuthGuard('jwt')) // Ensure the route is protected with JWT Auth Guard
+    // async addMembersToSession(@Param('sessionId') sessionId: string, @Body() updateBody: any, @Req() req: Request, @Res() res: Response) {
+    //     const sessionManagementServiceUrl = process.env.SESSION_MANAGEMENT_SERVICE_URL; // Ensure this environment variable is set
+        
+    //     try {
+    //         // Directly patch the session in the session management service
+    //         const sessionUpdateResponse = await this.httpService.patch(`${sessionManagementServiceUrl}/sessions/${sessionId}`, updateBody).toPromise();
+            
+    //         // Respond with the updated session data
+    //         return res.status(HttpStatus.OK).json(sessionUpdateResponse.data);
+    //     } catch (error) {
+    //         // Handle errors, such as session not found or validation errors from the session management service
+    //         console.error('Failed to update session:', error);
+    //         return res.status(error.response?.status || HttpStatus.INTERNAL_SERVER_ERROR).json(error.response?.data || { message: 'Failed to update session' });
+    //     }
+    // }
     
+
+
     @Post('close-session')
     @UseGuards(AuthGuard('jwt'))
     async closeSession(@Body() body, @Req() req) {

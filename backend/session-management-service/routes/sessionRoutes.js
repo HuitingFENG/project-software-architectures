@@ -12,6 +12,9 @@ async function sessionRoutes(fastify, options) {
       }
     });
 
+
+
+
     fastify.get('/sessions/getCatalogForQRCode', async (request, reply) => {
         try {
           const { qrCode } = request.query; // GET /sessions/getCatalogForQRCode?qrCode=yourQRCodeHere
@@ -44,17 +47,44 @@ async function sessionRoutes(fastify, options) {
       }
     });
   
+    // fastify.put('/sessions/:id', async (request, reply) => {
+    //   try {
+    //     const session = await Session.findByIdAndUpdate(request.params.id, request.body, { new: true });
+    //     if (!session) {
+    //       return reply.code(404).send({ message: 'session not found' });
+    //     }
+    //     reply.send({ session, message: 'session updated successfully' });
+    //   } catch (error) {
+    //     reply.code(400).send({ error: error.message });
+    //   }
+    // });
+
     fastify.put('/sessions/:id', async (request, reply) => {
       try {
-        const session = await Session.findByIdAndUpdate(request.params.id, request.body, { new: true });
-        if (!session) {
-          return reply.code(404).send({ message: 'session not found' });
+        const { id } = request.params;
+        const updateData = request.body;
+
+
+        if (updateData.customers) {
+            const session = await Session.findById(id);
+            if (!session) {
+                return reply.code(404).send({ message: 'Session not found' });
+            }
+            const updatedCustomers = Array.from(new Set([...session.customers, ...updateData.customers]));
+            updateData.customers = updatedCustomers;
         }
-        reply.send({ session, message: 'session updated successfully' });
+
+        const updatedSession = await Session.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedSession) {
+            return reply.code(404).send({ message: 'Session not found' });
+        }
+        reply.send({ session: updatedSession, message: 'Session updated successfully' });
       } catch (error) {
-        reply.code(400).send({ error: error.message });
+          reply.code(400).send({ error: error.message });
       }
-    });
+  });
+
+  
   
     fastify.delete('/sessions/:id', async (request, reply) => {
       try {
