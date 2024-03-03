@@ -10,5 +10,9 @@ export class Payment extends Model<Payment> {
   @Column
   method: string;
 
-  // ... other fields
+  @Column
+  customerId: string;
+
+  @Column
+  invoice: string;
 }
