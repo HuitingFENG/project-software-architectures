@@ -13,24 +13,24 @@ router.get('/orders', async (req, res) => {
     }
 });
   
-  
 // POST route for creating an order
 router.post('/orders', async (req, res) => {
     try {
         // Extract order data from the request body
-        const { userId, products, status, totalPrice } = req.body;
+        const { customerId, sessionId, products, totalPrice } = req.body;
 
         // Validate input data (basic example, consider more comprehensive validation)
-        if (!userId || !products || !status || !totalPrice) {
+        if ( !customerId || !products || !sessionId || !totalPrice ) {
         return res.status(400).json({ error: 'Missing required order fields' });
     }
 
     // Create the order in the database
     const order = await Order.create({
-        userId,
+        customerId,
+        sessionId,
         products,
-        status,
-        totalPrice
+        totalPrice,
+        status: "pending"
     });
 
     // Respond with the created order
@@ -41,7 +41,6 @@ router.post('/orders', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-
 
 router.patch('/orders/:orderId', async (req, res) => {
 try {
@@ -57,7 +56,6 @@ try {
 }
 });
 
-
 router.delete('/orders/:orderId', async (req, res) => {
 try {
     const numDeletedOrders = await Order.destroy({
@@ -72,7 +70,6 @@ try {
     res.status(400).json({ error: error.message });
 }
 });
-
 
 module.exports = router;
 
