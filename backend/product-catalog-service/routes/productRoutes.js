@@ -26,7 +26,7 @@ router.post('/add', authenticateToken, verifyAgent, async (req, res) => {
 });
 
 // Endpoint to retrieve all products
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const products = await Product.find({});
     res.send(products);
@@ -36,7 +36,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // GET /products/:id to retrieve a product by their ID
-router.get('/:id', authenticateToken,  async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
         if (!product) {
@@ -48,8 +48,21 @@ router.get('/:id', authenticateToken,  async (req, res) => {
     }
 });
 
+// GET /products/number/:number to retrieve a product by their number
+router.get('/number/:number', async (req, res) => {
+  try {
+      const product = await Product.find({ number: req.params.number });
+      if (!product) {
+          return res.status(404).send({ message: 'Product not found' });
+      }
+      res.send(product);
+  } catch (error) {
+      res.status(500).send({ error: error.message });
+  }
+});
+
 // GET /products/category/:categoryName to retrieve products by their category
-router.get('/category/:categoryName', authenticateToken, async (req, res) => {
+router.get('/category/:categoryName', async (req, res) => {
     try {
         const products = await Product.find({ category: req.params.categoryName });
         if (products.length === 0) {

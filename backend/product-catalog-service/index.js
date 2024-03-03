@@ -16,7 +16,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 app.use(express.json());
 
 
-app.use(authenticateToken);
+// app.use(authenticateToken);
 
 app.get('/', (req, res) => {
   res.send('Product Catalog Service');
