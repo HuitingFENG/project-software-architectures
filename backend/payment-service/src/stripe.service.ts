@@ -43,7 +43,7 @@ export class StripeService {
         }
         console.log("description: ", description);
         console.log("amount for Stripe Payment Process: ", amount);
-        
+
         try {
             const createCustomerViaStripe = await this.httpService.post(stripeCreateCustomerUrl, stringify(createCustomerRequest), { headers: headersRequest }).toPromise();
             const customerIdStripe = createCustomerViaStripe.data.id;
@@ -61,14 +61,15 @@ export class StripeService {
                 const payViaStripe = await this.httpService.post(stripeUrl, stringify(bodyRequest), { headers: headersRequest }).toPromise();
                 console.log("payViaStripe: ", payViaStripe.data);
                 console.log("payViaStripe.data.id: ", payViaStripe.data.id);
+                const returnedAmount = amount / 100;
 
                 try {
                     const paymentRecord = await Payment.create({
                         // id: payViaStripe.data.id,
-                        amount: amount / 100,
+                        amount: returnedAmount,
                         method: payment_method,
                         customerId: customerId, 
-                        invoice: description, 
+                        invoice: description + ` Invoice Details: amount is ${returnedAmount}, payment_method is ${payment_method}, currency is ${currency}. (Eur = euro) `, 
                         stripe: payViaStripe.data, 
                     });
 

@@ -207,7 +207,9 @@ export class GatewayController {
         const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
         const stripeUrl = this.configService.get('STRIPE_URL');
         const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const description = `Pay for all orders of sessionId ${sessionId} by customerId ${customerId} (customerEmail : ${email})`;
         console.log("paymentServiceUrl: ", paymentServiceUrl);
+        console.log("description: ", description);
 
         try {
             const ordersObservable = this.httpService.get(`${orderServiceUrl}/orders/session/${sessionId}`);
@@ -222,11 +224,10 @@ export class GatewayController {
                 currency: "eur",
                 customerEmail: email,
                 customerId: customerId,
-                description: `Pay for all orders for sessionId ${sessionId} by customerId ${customerId} (customerEmail : ${email})`,
+                description: description,
             }).toPromise();
             console.log("paymentResponse: ", paymentResponse);
             console.log("paymentResponse.data: ", paymentResponse.data);
-
 
             // Update the session's restToPay to 0 after successful payment
             await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
@@ -234,6 +235,13 @@ export class GatewayController {
             }).toPromise();
             console.log(`Session ${sessionId} restToPay updated to 0`);
 
+            // Assuming paymentResponse.data is the structure shared in your message
+            const paymentRecordObject = paymentResponse.data.find(item => item.paymentRecord);
+            const invoiceDescription = paymentRecordObject ? paymentRecordObject.paymentRecord.invoice : "Default invoice description";
+            console.log("invoiceDescription: ", invoiceDescription);
+
+            // After successful payment logic inside payAllOrders or payMyOwnOrders
+            await this.createNotificationAndUpdateSession(sessionId, invoiceDescription, email);
 
             await this.updateOrdersAfterPaymentForAllOrders(sessionId, paymentResponse.data);
             
@@ -242,6 +250,7 @@ export class GatewayController {
             throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
         }
     }
+
 
 
     @Post('pay-my-own-orders/:sessionId')
@@ -253,6 +262,7 @@ export class GatewayController {
         const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
         const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
         const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
+
 
         try {
             const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
@@ -290,7 +300,16 @@ export class GatewayController {
                 restToPay: session.restToPay - totalPrice
             }).toPromise();
     
+            // Assuming paymentResponse.data is the structure shared in your message
+            const paymentRecordObject = paymentResponse.data.find(item => item.paymentRecord);
+            const invoiceDescription = paymentRecordObject ? paymentRecordObject.paymentRecord.invoice : "Default invoice description";
+            console.log("invoiceDescription: ", invoiceDescription);
 
+            // After successful payment logic inside payAllOrders or payMyOwnOrders
+            await this.createNotificationAndUpdateSession(sessionId, invoiceDescription, email);
+
+
+            // updateOrdersAfterPaymentForAllMyOwnOrders
             const updatePromises = myOrders.map(order => {
                 const existingPayments = Array.isArray(order.payments) ? order.payments : [];
 
@@ -300,7 +319,7 @@ export class GatewayController {
                 }).toPromise()
             });
     
-            
+
             await Promise.all(updatePromises);
             console.log("updatePromises: ", updatePromises);
 
@@ -313,13 +332,13 @@ export class GatewayController {
         }
     }
 
+
     @Post('pay-part-of-all-orders/:sessionId')
     @UseGuards(AuthGuard('jwt'))
     async payPartOfOrders(@Param('sessionId') sessionId: string, @Body() paymentDto: any, @Req() req): Promise<any> {
         console.log("Pay-part-of-all-orders route hit");
 
         
-
 
     }
 
@@ -421,6 +440,39 @@ export class GatewayController {
     }
 
 
+    private async createNotificationAndUpdateSession(sessionId, description, userEmail) {
+        const notificationServiceUrl = this.configService.get('NOTIFICATION_SERVICE_URL');
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+    
+        // Step 1: Create the notification
+        const notificationPayload = {
+            userEmail,
+            message: description,
+            status: 'created', // Default status
+        };
+    
+        try {
+            const notificationResponse = await this.httpService.post(`${notificationServiceUrl}/notifications/add`, notificationPayload).toPromise();
+            const notificationId = notificationResponse.data.notification._id;
+    
+            // Step 2: Update the session's notifications array
+            const sessionUpdateResponse = await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
+                $push: { notifications: notificationId }
+            }).toPromise();
+            console.log("sessionUpdateResponse: ", sessionUpdateResponse);
+
+            // Step 3: Update the notification's status to "sent"
+            await this.httpService.put(`${notificationServiceUrl}/notifications/${notificationId}`, {
+                status: 'sent'
+            }).toPromise();
+    
+            console.log("Notification created and session updated successfully");
+        } catch (error) {
+            console.error("Failed to create notification or update session:", error.message);
+            // Handle errors appropriately
+        }
+    }
+    
     
 
 
