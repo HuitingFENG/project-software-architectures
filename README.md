@@ -66,7 +66,7 @@ Scalability: Ensures that services can handle increased loads, which may involve
 
 
 ### Explanations for some services
-A Session model could have a list of customerIds and a list of orderIds. The session begins when a customer scans the QR code and is marked as active. The session can either be for a single customer or a group of customers who join the session by scanning the same QR code.
+A Session model could have a list of customerIds and a list of orderIds. The session begins when a customer scans the QR code and is marked as active. The session can either be for a single customer or a group of customers who are invited/added on the session by the owner of alley.
 Each Order would be associated with a customerId and a sessionId, allowing for tracking individual orders within a shared session.
 
 

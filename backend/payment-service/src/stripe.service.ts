@@ -42,7 +42,8 @@ export class StripeService {
             email: customerEmail,
         }
         console.log("description: ", description);
-
+        console.log("amount for Stripe Payment Process: ", amount);
+        
         try {
             const createCustomerViaStripe = await this.httpService.post(stripeCreateCustomerUrl, stringify(createCustomerRequest), { headers: headersRequest }).toPromise();
             const customerIdStripe = createCustomerViaStripe.data.id;
@@ -64,7 +65,7 @@ export class StripeService {
                 try {
                     const paymentRecord = await Payment.create({
                         // id: payViaStripe.data.id,
-                        amount: amount,
+                        amount: amount / 100,
                         method: payment_method,
                         customerId: customerId, 
                         invoice: description, 
@@ -72,8 +73,8 @@ export class StripeService {
                     });
 
                     console.log("Payment record created: ", paymentRecord.id);
-
-                    return paymentRecord.id;
+ 
+                    return [ {"paymentRecord": paymentRecord}, { "payViaStripe.data" : payViaStripe.data } ];
 
                 } catch (error) {
                     console.error('Error saving payment record:', error);
@@ -84,23 +85,11 @@ export class StripeService {
                 
                 
             } catch (error) {
-                let errorMessage = 'Payment processing failed';
-                if (error.response && error.response.data && error.response.data.error && error.response.data.error.message) {
-                    errorMessage += ': ' + error.response.data.error.message;
-                } else if (error.message) {
-                    errorMessage += ': ' + error.message;
-                }
                 console.error('Stripe payment error:', error);
                 throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
             }
 
         } catch (error) {
-            let errorMessage = 'Payment processing failed';
-            if (error.response && error.response.data && error.response.data.error && error.response.data.error.message) {
-                errorMessage += ': ' + error.response.data.error.message;
-            } else if (error.message) {
-                errorMessage += ': ' + error.message;
-            }
             console.error('Stripe payment error:', error);
             throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
         }

@@ -217,7 +217,7 @@ export class GatewayController {
             console.log("totalPrice: ", totalPrice);
 
             const paymentResponse = await this.httpService.post(`${paymentServiceUrl}/payments`, {
-                amount: totalPrice,
+                amount: totalPrice * 100, // at least more than 0.5 euro due to Stripe limitation pf payment by visa card   
                 payment_method: "pm_card_visa",
                 currency: "eur",
                 customerEmail: email,
@@ -275,7 +275,7 @@ export class GatewayController {
             console.log(`Total price for my orders: ${totalPrice}`);
 
             const paymentResponse = await this.httpService.post(`${paymentServiceUrl}/payments`, {
-                amount: totalPrice,
+                amount: totalPrice * 100,
                 payment_method: "pm_card_visa",
                 currency: "eur",
                 customerEmail: email,
@@ -284,14 +284,23 @@ export class GatewayController {
             }).toPromise();
             console.log("paymentResponse: ", paymentResponse);
             console.log("paymentResponse.data: ", paymentResponse.data);
+
+            // Update the session's restToPay after successful payment
+            const updatedSessionResponse = await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
+                restToPay: session.restToPay - totalPrice
+            }).toPromise();
     
-            const updatePromises = myOrders.map(order =>
+
+            const updatePromises = myOrders.map(order => {
+                const existingPayments = Array.isArray(order.payments) ? order.payments : [];
+
                 this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, {
                     status: 'paid',
-                    payments: [...order.payments, paymentResponse.data], 
+                    payments: [...existingPayments,, paymentResponse.data], 
                 }).toPromise()
-            );
+            });
     
+            
             await Promise.all(updatePromises);
             console.log("updatePromises: ", updatePromises);
 
