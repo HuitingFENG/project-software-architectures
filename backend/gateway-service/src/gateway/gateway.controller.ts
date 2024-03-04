@@ -470,20 +470,12 @@ export class GatewayController {
     @UseGuards(AuthGuard('jwt'))
     async checkBillOfSession(@Param('sessionId') sessionId: string): Promise<any> {
         const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
-        // const customerServiceUrl = this.configService.get('USER_SERVICE_URL');
 
         try {
             const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
             const session = sessionResponse.data;
 
-            // const customerDetailsPromises = session.customers.map(customerId =>
-            //     this.httpService.get(`${customerServiceUrl}/users/${customerId}`).toPromise()
-            // );
-
-            // const customerDetails = await Promise.all(customerDetailsPromises);
-
             return {
-                // customers: customerDetails.map(response => response.data)
                 session
             };
         } catch (error) {
