@@ -193,13 +193,10 @@ export class GatewayController {
         );
     }
 
-
     @Post('pay-all-orders/:sessionId')
     @UseGuards(AuthGuard('jwt'))
     async payAllOrders(@Param('sessionId') sessionId: string, @Body() paymentDto: any, @Req() req): Promise<any> {
         console.log("Pay-all-orders route hit");
-
-        // const { amount } = paymentDto;
         const email = req.user.email; 
         const customerId = req.user.id; 
         const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
@@ -232,6 +229,70 @@ export class GatewayController {
             throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    @Post('pay-my-own-orders/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async payMyOwnOrders(@Param('sessionId') sessionId: string, @Body() paymentDto: any, @Req() req): Promise<any> {
+        console.log("Pay-my-own-orders route hit");
+        const email = req.user.email; 
+        const customerId = req.user.id;
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+        const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
+
+        try {
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+
+            if (!session.customers.includes(customerId)) {
+                throw new HttpException("You are not part of this session.", HttpStatus.FORBIDDEN);
+            }
+
+            const orders = await Promise.all(session.orders.map(orderId =>
+                this.httpService.get(`${orderServiceUrl}/orders/${orderId}`).toPromise()
+            ));
+
+            const myOrders = orders
+                .map(response => response.data)
+                .filter(order => order.customers.some(customer => customer.id === customerId));
+
+            const totalPrice = myOrders.reduce((acc, order) => acc + order.totalPrice, 0);
+            console.log("myOrders: ", myOrders);
+            console.log(`Total price for my orders: ${totalPrice}`);
+
+            const paymentResponse = await this.httpService.post(`${paymentServiceUrl}/payments`, {
+                amount: totalPrice,
+                payment_method: "pm_card_visa",
+                currency: "eur",
+                customerEmail: email,
+                customerId: customerId,
+                description: `Pay for all orders for sessionId ${sessionId} by customerId ${customerId} (customerEmail : ${email})`,
+            }).toPromise();
+            console.log("paymentResponse: ", paymentResponse);
+            console.log("paymentResponse.data: ", paymentResponse.data);
+    
+            const updatePromises = myOrders.map(order =>
+                this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, {
+                    status: 'paid',
+                    payments: [...order.payments, paymentResponse.data], 
+                }).toPromise()
+            );
+    
+            await Promise.all(updatePromises);
+            console.log("updatePromises: ", updatePromises);
+
+
+            return { message: "Orders updated successfully",  myOrders, totalPrice };
+
+        } catch (error) {
+            console.error(`Error: ${error.message}`);
+            throw new HttpException(`Error: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+
 
 
 
