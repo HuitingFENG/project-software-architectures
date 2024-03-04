@@ -318,11 +318,9 @@ export class GatewayController {
 
                 this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, {
                     status: 'paid',
-                    payments: [...existingPayments,, paymentResponse.data], 
+                    payments: [...existingPayments, paymentResponse.data], 
                 }).toPromise()
             });
-    
-
             await Promise.all(updatePromises);
             console.log("updatePromises: ", updatePromises);
 
@@ -342,9 +340,114 @@ export class GatewayController {
     async payPartOfOrders(@Param('sessionId') sessionId: string, @Body() paymentDto: any, @Req() req): Promise<any> {
         console.log("Pay-part-of-all-orders route hit");
 
-        
+        // Step 1: Validate the user is part of the session
+        const email = req.user.email; 
+        const customerId = req.user.id; 
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const sessionResponse = await lastValueFrom(this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`));
+        const session = sessionResponse.data;
+        const description = `Pay for all orders of sessionId ${sessionId} by customerId ${customerId} (customerEmail : ${email})`;
+        console.log("session: ", session);
+        console.log("paymentDto: ", paymentDto);
+        console.log("paymentDto.amount: ", paymentDto.amount);
 
+        if (!session.customers.includes(req.user.id)) {
+            throw new HttpException("You are not part of this session.", HttpStatus.FORBIDDEN);
+        }
+
+        // Step 2: Process the payment
+        const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
+        const paymentResponse = await lastValueFrom(this.httpService.post(`${paymentServiceUrl}/payments`, {
+            amount: paymentDto.amount * 100,
+            payment_method: "pm_card_visa",
+            currency: "eur",
+            customerEmail: email,
+            customerId: customerId,
+            description: description,
+        }));
+        console.log("paymentResponse: ", paymentResponse);
+        // const paymentRecordId = paymentResponse.data.paymentRecord.id;
+        // console.log("paymentRecordId: ", paymentRecordId);
+
+        // Assuming paymentResponse.data is the structure shared in your message
+        const paymentRecordObject = paymentResponse.data.find(item => item.paymentRecord);
+        const invoiceDescription = paymentRecordObject ? paymentRecordObject.paymentRecord.invoice : "Default invoice description";
+        console.log("invoiceDescription: ", invoiceDescription);
+        const returnedPaymentId = paymentRecordObject ? paymentRecordObject.paymentRecord.id : "Default payment id";
+        console.log("returnedPaymentId: ", returnedPaymentId);
+
+        // After successful payment logic inside payAllOrders or payMyOwnOrders
+        await this.createNotificationAndUpdateSession(sessionId, invoiceDescription, email);
+
+        // Step 3: Update all orders in the session with the payment record
+        // await Promise.all(session.orders.map(orderId => 
+        //     this.httpService.patch(`${orderServiceUrl}/orders/${orderId}`, {
+        //         $push: { payments: returnedPaymentId }, status: 'paid',
+        //     }).toPromise()
+        // ));
+
+
+
+
+        // const updatePromises = session.orders.map(order => {
+        //     const existingPayments = Array.isArray(order.payments) ? order.payments : [];
+
+        //     this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, {
+        //         status: 'paid',
+        //         payments: [...existingPayments, returnedPaymentId], 
+        //     }).toPromise()
+        // });
+        // await Promise.all(updatePromises);
+        // console.log("updatePromises: ", updatePromises);
+
+
+        const ordersResponse = await this.httpService.get(`${orderServiceUrl}/orders/session/${sessionId}`).toPromise();
+        const orders = ordersResponse.data;
+
+        orders.forEach(async (order) => {
+            const existingPayments = Array.isArray(order.payments) ? order.payments : [];
+            console.log("existingPayments: ", existingPayments);
+            const updateBody = {
+                status: 'paid',
+                payments: [ ...existingPayments, returnedPaymentId ],
+            };
+            console.log("updateBody: ", updateBody);
+            await this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, updateBody).toPromise();
+        });
+
+        console.log("Orders updated successfully");
+
+
+
+
+
+
+        // Step 4: Update session's restToPay
+        const newRestToPay = session.restToPay - paymentDto.amount;
+        console.log("newRestToPay: ", newRestToPay);
+        await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
+            restToPay: newRestToPay > 0 ? newRestToPay : 0,
+        }).toPromise();
+
+        await this.updateSessionStatusIfPaidOff(sessionId);
+
+        return { message: "Partial payment made successfully", paymentDetails: paymentResponse.data };
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Get('/check-all-details-of-session/:sessionId')
     @UseGuards(AuthGuard('jwt'))
@@ -698,7 +801,7 @@ export class GatewayController {
             if (session.restToPay === 0) {
                 // Update the session's status to 'vacant'
                 await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
-                    status: 'vacant'
+                    status: 'closed'
                 }).toPromise();
                 console.log(`Session ${sessionId} status updated to 'vacant'`);
             }
