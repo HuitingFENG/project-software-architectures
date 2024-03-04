@@ -55,7 +55,10 @@ export class GatewayController {
                 customers: [ req.user.id ],
                 qrCode,
                 orders: [],
-                status: 'active'
+                status: 'active',
+                needToPay: 0,
+                restToPay: 0,
+                notifications: [],
             }).toPromise();
             // return sessionResponse.data;
 
@@ -109,6 +112,7 @@ export class GatewayController {
 
         const sessionUpdatePayload = {
             orders: [ orderData.id ], 
+            orderDetails: { totalPrice: orderData.totalPrice }
         };
         console.log("sessionUpdatePayload: ", sessionUpdatePayload);
 
@@ -289,9 +293,17 @@ export class GatewayController {
             console.error(`Error: ${error.message}`);
             throw new HttpException(`Error: ${error.message}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
+    @Post('pay-part-of-all-orders/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async payPartOfOrders(@Param('sessionId') sessionId: string, @Body() paymentDto: any, @Req() req): Promise<any> {
+        console.log("Pay-part-of-all-orders route hit");
+
+        
+
+
+    }
 
 
 

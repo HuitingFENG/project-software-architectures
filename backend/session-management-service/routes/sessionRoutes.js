@@ -12,9 +12,6 @@ async function sessionRoutes(fastify, options) {
       }
     });
 
-
-
-
     fastify.get('/sessions/getCatalogForQRCode', async (request, reply) => {
         try {
           const { qrCode } = request.query; // GET /sessions/getCatalogForQRCode?qrCode=yourQRCodeHere
@@ -94,6 +91,10 @@ async function sessionRoutes(fastify, options) {
         if (!session) {
           return reply.code(404).send({ message: 'Session not found' });
         }
+
+        session.needToPay += updateData.orderDetails.totalPrice;
+        session.restToPay += updateData.orderDetails.totalPrice;
+
 
         // Update customers array
         if (updateData.customers) {
