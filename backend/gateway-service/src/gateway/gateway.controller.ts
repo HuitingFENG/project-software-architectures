@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { AuthGuard } from '@nestjs/passport';
-import { Observable, catchError, forkJoin, map, mergeMap, of } from 'rxjs';
+import { Observable, catchError, forkJoin, lastValueFrom, map, mergeMap, of } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 import Stripe from 'stripe';
 
@@ -196,21 +196,26 @@ export class GatewayController {
 
     @Post('pay-all-orders/:sessionId')
     @UseGuards(AuthGuard('jwt'))
-    async payAllOrders(@Body() paymentDto: any, @Req() req): Promise<any> {
+    async payAllOrders(@Param('sessionId') sessionId: string, @Body() paymentDto: any, @Req() req): Promise<any> {
         console.log("Pay-all-orders route hit");
 
-        const { sessionId } = req.params;
-        const { amount } = paymentDto;
+        // const { amount } = paymentDto;
         const email = req.user.email; 
         const customerId = req.user.id; 
-      
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
         const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
         const stripeUrl = this.configService.get('STRIPE_URL');
         console.log("paymentServiceUrl: ", paymentServiceUrl);
 
         try {
+            const ordersObservable = this.httpService.get(`${orderServiceUrl}/orders/session/${sessionId}`);
+            const ordersResponse = await lastValueFrom(ordersObservable);
+            const orders = ordersResponse.data;
+            const totalPrice = orders.reduce((acc, order) => acc + order.totalPrice, 0);
+            console.log("totalPrice: ", totalPrice);
+
             const paymentResponse = await this.httpService.post(`${paymentServiceUrl}/payments`, {
-                amount: paymentDto.amount,
+                amount: totalPrice,
                 payment_method: "pm_card_visa",
                 currency: "eur",
                 customerEmail: email,
@@ -219,6 +224,8 @@ export class GatewayController {
             }).toPromise();
             console.log("paymentResponse: ", paymentResponse);
             console.log("paymentResponse.data: ", paymentResponse.data);
+
+            await this.updateOrdersAfterPaymentForAllOrders(sessionId, paymentResponse.data);
             
             return paymentResponse.data;
         } catch (error) {
@@ -305,7 +312,22 @@ export class GatewayController {
         }
     }
 
-    
+    private async updateOrdersAfterPaymentForAllOrders(sessionId: string, paymentRecordId: string): Promise<void> {
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+
+        const ordersResponse = await this.httpService.get(`${orderServiceUrl}/orders/session/${sessionId}`).toPromise();
+        const orders = ordersResponse.data;
+
+        orders.forEach(async (order) => {
+            const updateBody = {
+                status: 'paid',
+                payments: [paymentRecordId],
+            };
+            await this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, updateBody).toPromise();
+        });
+
+        console.log("Orders updated successfully");
+    }
 
 
     

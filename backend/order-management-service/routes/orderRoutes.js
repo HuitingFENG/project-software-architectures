@@ -39,6 +39,26 @@ router.get('/orders/:id', async (req, res) => {
     }
 });
 
+router.get('/orders/session/:sessionId', async (req, res) => {
+    try {
+        const sessionId = req.params.sessionId;
+        const orders = await Order.findAll({
+            where: { sessionId: sessionId }
+        });
+
+        if (!orders) {
+            return res.status(404).send({ message: 'No orders found for the given session ID' });
+        }
+
+        res.json(orders);
+    } catch (error) {
+        console.error('Error fetching orders for session:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+
 
 router.post('/orders', async (req, res) => {
     try {

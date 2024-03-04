@@ -5,6 +5,7 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { stringify } from 'querystring';
 import Stripe from 'stripe';
+import { Payment } from './models/payment.model';
 
 @Injectable()
 export class StripeService {
@@ -59,11 +60,34 @@ export class StripeService {
                 const payViaStripe = await this.httpService.post(stripeUrl, stringify(bodyRequest), { headers: headersRequest }).toPromise();
                 console.log("payViaStripe: ", payViaStripe.data);
                 console.log("payViaStripe.data.id: ", payViaStripe.data.id);
-                return payViaStripe.data;
+
+                try {
+                    const paymentRecord = await Payment.create({
+                        // id: payViaStripe.data.id,
+                        amount: amount,
+                        method: payment_method,
+                        customerId: customerId, 
+                        invoice: description, 
+                        stripe: payViaStripe.data, 
+                    });
+
+                    console.log("Payment record created: ", paymentRecord.id);
+
+                    return paymentRecord.id;
+
+                } catch (error) {
+                    console.error('Error saving payment record:', error);
+                    throw new HttpException('Failed to save payment record', HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+                // return payViaStripe.data;
+                
+                
             } catch (error) {
                 console.error('Stripe payment error:', error);
                 throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
             }
+
         } catch (error) {
             console.error('Stripe payment error:', error);
             throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
