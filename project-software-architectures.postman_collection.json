@@ -1,0 +1,1547 @@
+{
+	"info": {
+		"_postman_id": "5d00032f-64f8-4563-81f5-c225e81ee130",
+		"name": "project-software-architectures",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33244117"
+	},
+	"item": [
+		{
+			"name": "user-service",
+			"item": [
+				{
+					"name": "get-all-users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register-user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"agent4\",\n    \"email\": \"agent4@efrei.fr\",\n    \"password\": \"123456\",\n    \"role\": \"agent\",\n    \"parkId\": \"Fr-4\",\n    \"parkLocation\": \"Toulouse\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-user-by-id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/?id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-user-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users/?id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users/?id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-user-by-email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users/email/john.doe@example.com",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"email",
+								"john.doe@example.com"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "validate-by-email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"customer1@gmail.com\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/validate",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login-by-email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"customer3@efrei.net\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "session-management-service",
+			"item": [
+				{
+					"name": "get-all-sessions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3005/sessions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-session",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/sessions/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"sessions",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-session-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3005/sessions/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"sessions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-session-by-id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/sessions/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"sessions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-session-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3005/sessions/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"sessions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCatalogForQRCode",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUzNDA5MGI1ZGMwMjgzOWNlMDJhNzYiLCJlbWFpbCI6ImN1c3RvbWVyM0BlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDk0MTI5MzksImV4cCI6MTcwOTQxNjUzOX0.KjSUhJaEQ3quq4rqh3WsfTVIdTLSCVlFzyw3ZxPe5FM",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3005/sessions/getCatalogForQRCode?qrCode=QR-Fr-5-Nice-4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"sessions",
+								"getCatalogForQRCode"
+							],
+							"query": [
+								{
+									"key": "qrCode",
+									"value": "QR-Fr-5-Nice-4"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "product-catalog-service",
+			"item": [
+				{
+					"name": "get-all-products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUzNDA5MGI1ZGMwMjgzOWNlMDJhNzYiLCJlbWFpbCI6ImN1c3RvbWVyM0BlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDk0MDYyMTYsImV4cCI6MTcwOTQwOTgxNn0.WT2deEKcUUek_3hYkyABcySdf8T_GNLhIqUiiQ3eC1Y",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"cocktail\",\n    \"description\": \"mojito cocktail\",\n    \"price\": 12,\n    \"category\": \"beverage\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUzNDA5MGI1ZGMwMjgzOWNlMDJhNzYiLCJlbWFpbCI6ImN1c3RvbWVyM0BlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDk0MTI5MzksImV4cCI6MTcwOTQxNjUzOX0.KjSUhJaEQ3quq4rqh3WsfTVIdTLSCVlFzyw3ZxPe5FM",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"tea\",\n    \"description\": \"green tea x 1 bottle\",\n    \"price\": 2,\n    \"category\": \"beverage\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/products/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-product-by-id",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUyM2Y0YmZiNzRiYTJiMTllZDY1YzUiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDkzNDkxNDYsImV4cCI6MTcwOTM1Mjc0Nn0.4RYvvsJVxJo8qpE_Pje0HFwZc0A9E9bzwMtWRCNnNy0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n   \n    \"name\": \"green tea\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3001/products/65e295afe73172ba04d3e13d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products",
+								"65e295afe73172ba04d3e13d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-product-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUyM2Y0YmZiNzRiYTJiMTllZDY1YzUiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDkzNDkxNDYsImV4cCI6MTcwOTM1Mjc0Nn0.4RYvvsJVxJo8qpE_Pje0HFwZc0A9E9bzwMtWRCNnNy0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3001/products/65e295afe73172ba04d3e13d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products",
+								"65e295afe73172ba04d3e13d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-product-by-id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUyN2M2NGFmNDM2ZTdiZWM1MTZjZmMiLCJlbWFpbCI6ImFnZW50MUBlZnJlaS5mciIsInJvbGUiOiJhZ2VudCIsImlhdCI6MTcwOTM0NzM2MywiZXhwIjoxNzA5MzUwOTYzfQ.TcFkPxopt2L9T5OrxBPT8ETWKPoPIiEDfFQZB3WP2lA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3001/products/?id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products",
+								""
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-products-by-category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUyM2Y0YmZiNzRiYTJiMTllZDY1YzUiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDkzNDkxNDYsImV4cCI6MTcwOTM1Mjc0Nn0.4RYvvsJVxJo8qpE_Pje0HFwZc0A9E9bzwMtWRCNnNy0",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3001/products/category/brunch",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products",
+								"category",
+								"brunch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-product-by-number",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3001/products/:number",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3001",
+							"path": [
+								"products",
+								":number"
+							],
+							"variable": [
+								{
+									"key": "number",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "payment-service",
+			"item": [
+				{
+					"name": "get-all-payments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3003/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3003",
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 100,\n  \"method\": \"CB\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3003/payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3003",
+							"path": [
+								"payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-payment-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3003/payments/:paymentId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3003",
+							"path": [
+								"payments",
+								":paymentId"
+							],
+							"variable": [
+								{
+									"key": "paymentId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stripe-create-payment-method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer sk_test_51OqLwkGlIFSVv5NimO00ngcudXXOHCGvtW93jA2jUAt4WmJd1eJxUWmrZ5nrPB7ESVzVHbzdz6IfgMcEOmRBJGFs00dWqs1HaV",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "https://api.stripe.com/v1/payment_intents",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stripe",
+								"com"
+							],
+							"path": [
+								"v1",
+								"payment_intents"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stripe-create-customer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer sk_test_51OqLwkGlIFSVv5NimO00ngcudXXOHCGvtW93jA2jUAt4WmJd1eJxUWmrZ5nrPB7ESVzVHbzdz6IfgMcEOmRBJGFs00dWqs1HaV",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "customer1@efrei.net",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.stripe.com/v1/customers",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stripe",
+								"com"
+							],
+							"path": [
+								"v1",
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "stripe-send-payment-request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer sk_test_51OqLwkGlIFSVv5NimO00ngcudXXOHCGvtW93jA2jUAt4WmJd1eJxUWmrZ5nrPB7ESVzVHbzdz6IfgMcEOmRBJGFs00dWqs1HaV",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "amount",
+									"value": "15",
+									"type": "text"
+								},
+								{
+									"key": "payment_method",
+									"value": "pm_C",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://api.stripe.com/v1/payment_intents",
+							"protocol": "https",
+							"host": [
+								"api",
+								"stripe",
+								"com"
+							],
+							"path": [
+								"v1",
+								"payment_intents"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order-management-service",
+			"item": [
+				{
+					"name": "get-all-orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"products\": [\n        {\n            \"number\": 3,\n            \"quantity\": 2\n        },\n        {\n            \"number\": 4,\n            \"quantity\": 2 \n        }\n       \n    ],\n    \"customers\": [\n        {\n            \"email\": \"customer2@efrei.net\"\n        }\n    ],\n    \"sessionId\": \"65e3be3f7182bf344342d6f7\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-order-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3002/orders/:orderId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-order-by-id",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/orders/:orderId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-order-by-id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/orders/:orderId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"orders",
+								":orderId"
+							],
+							"variable": [
+								{
+									"key": "orderId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-orders-by-session",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3002/orders/session/:sessionId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3002",
+							"path": [
+								"orders",
+								"session",
+								":sessionId"
+							],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "notification-service",
+			"item": [
+				{
+					"name": "get-all-notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3004/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3004",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-notification",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userEmail\":\"john.doe@example.com\",\n    \"message\":\"This is an invoice\",\n    \"status\":\"created\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3004/notifications/add",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3004",
+							"path": [
+								"notifications",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-notification-by-id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3004//notifications/65e1c2088307633527551e44",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3004",
+							"path": [
+								"",
+								"notifications",
+								"65e1c2088307633527551e44"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get-notification-by-email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3004/notifications/email/:userEmail",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3004",
+							"path": [
+								"notifications",
+								"email",
+								":userEmail"
+							],
+							"variable": [
+								{
+									"key": "userEmail",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-notification-by-id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3004/notifications/:id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3004",
+							"path": [
+								"notifications",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete-notification-by-id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3004/notifications/65e1c2088307633527551e44",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3004",
+							"path": [
+								"notifications",
+								"65e1c2088307633527551e44"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "gateway-service",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"customer3@efrei.net\",\n    \"password\": \"123456\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3006/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "start-session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUzNDA4N2I1ZGMwMjgzOWNlMDJhNzQiLCJlbWFpbCI6ImN1c3RvbWVyMkBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDk0MTkyMTYsImV4cCI6MTcwOTQyMjgxNn0.3LhMDXotKey2qO-rZuhdCXkpGf_BmZ7N42wKGa5iLts",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"qrCode\": \"QR-Fr-5-Nice-2\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3006/start-session/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"start-session",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add-members-into-session",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTM0MDg3YjVkYzAyODM5Y2UwMmE3NCIsIm5hbWUiOiJjdXN0b21lcjIiLCJlbWFpbCI6ImN1c3RvbWVyMkBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJwYXJrSWQiOiIiLCJwYXJrTG9jYXRpb24iOiIiLCJpYXQiOjE3MDk0MjI1MzgsImV4cCI6MTcwOTQyNjEzOH0.gmdhynGo3VtHF2IWBKl_CpbXPs67_nWu_-J7V8dcNIY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"customers\": [\"65e34080b5dc02839ce02a72\", \"65e34090b5dc02839ce02a76\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3006/add-members-into-session/65e3be3f7182bf344342d6f7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"add-members-into-session",
+								"65e3be3f7182bf344342d6f7"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create-order-into-session",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3006/create-order-into-session/:sessionId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"create-order-into-session",
+								":sessionId"
+							],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check-all-orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTM0MDgwYjVkYzAyODM5Y2UwMmE3MiIsIm5hbWUiOiJjdXN0b21lcjEiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJwYXJrSWQiOiIiLCJwYXJrTG9jYXRpb24iOiIiLCJpYXQiOjE3MDk0ODQ2OTUsImV4cCI6MTcwOTQ4ODI5NX0.ai5s3x3YOngwaq74rq1wDtemgPqnHz5Lh-Wj0pjMZ08",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3006/check-all-orders/65e4aaa92cf10131dfa7e494",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"check-all-orders",
+								"65e4aaa92cf10131dfa7e494"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "check-my-own-orders",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTM0MDgwYjVkYzAyODM5Y2UwMmE3MiIsIm5hbWUiOiJjdXN0b21lcjEiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJwYXJrSWQiOiIiLCJwYXJrTG9jYXRpb24iOiIiLCJpYXQiOjE3MDk0ODQ2OTUsImV4cCI6MTcwOTQ4ODI5NX0.ai5s3x3YOngwaq74rq1wDtemgPqnHz5Lh-Wj0pjMZ08",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3006/check-my-own-orders/:sessionId",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"check-my-own-orders",
+								":sessionId"
+							],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pay-all-orders",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTM0MDgwYjVkYzAyODM5Y2UwMmE3MiIsIm5hbWUiOiJjdXN0b21lcjEiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJwYXJrSWQiOiIiLCJwYXJrTG9jYXRpb24iOiIiLCJpYXQiOjE3MDk1MDMyODIsImV4cCI6MTcwOTUwNjg4Mn0.GrYzY0MQjymqJqxqz1okLwTOKUeo459mbxQR0JUriPE",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3006/pay-all-orders/65e4aaa92cf10131dfa7e494",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"pay-all-orders",
+								"65e4aaa92cf10131dfa7e494"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pay-my-own-orders",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTM0MDgwYjVkYzAyODM5Y2UwMmE3MiIsIm5hbWUiOiJjdXN0b21lcjEiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJwYXJrSWQiOiIiLCJwYXJrTG9jYXRpb24iOiIiLCJpYXQiOjE3MDk1MTI1MjUsImV4cCI6MTcwOTUxNjEyNX0.xU9yGHXOUCQG6Zql5C0YryDTFAyC9Er_GhZw8GvSzUc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3006/pay-my-own-orders/65e4aaa92cf10131dfa7e494",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"pay-my-own-orders",
+								"65e4aaa92cf10131dfa7e494"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pay-part-of-all-orders",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1ZTM0MDgwYjVkYzAyODM5Y2UwMmE3MiIsIm5hbWUiOiJjdXN0b21lcjEiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJwYXJrSWQiOiIiLCJwYXJrTG9jYXRpb24iOiIiLCJpYXQiOjE3MDk1MTI1MjUsImV4cCI6MTcwOTUxNjEyNX0.xU9yGHXOUCQG6Zql5C0YryDTFAyC9Er_GhZw8GvSzUc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3006/pay-part-of-all-orders/65e4aaa92cf10131dfa7e494",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"pay-part-of-all-orders",
+								"65e4aaa92cf10131dfa7e494"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "session-management-service",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWUzNDA4MGI1ZGMwMjgzOWNlMDJhNzIiLCJlbWFpbCI6ImN1c3RvbWVyMUBlZnJlaS5uZXQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MDk0MTU3NDAsImV4cCI6MTcwOTQxOTM0MH0.xZr9u0H7TvwiZHNLG6xgwSC2Rd7Z-qSDMSrltKD7phk",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:3006/sessions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "product-catalog-service",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3006/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "payment-service",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3006/payments",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"payments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "order-management-service",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3006/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "notification-service",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3006/notifications",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3006",
+							"path": [
+								"notifications"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user-service",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
