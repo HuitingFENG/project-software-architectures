@@ -84,11 +84,23 @@ export class StripeService {
                 
                 
             } catch (error) {
+                let errorMessage = 'Payment processing failed';
+                if (error.response && error.response.data && error.response.data.error && error.response.data.error.message) {
+                    errorMessage += ': ' + error.response.data.error.message;
+                } else if (error.message) {
+                    errorMessage += ': ' + error.message;
+                }
                 console.error('Stripe payment error:', error);
                 throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
             }
 
         } catch (error) {
+            let errorMessage = 'Payment processing failed';
+            if (error.response && error.response.data && error.response.data.error && error.response.data.error.message) {
+                errorMessage += ': ' + error.response.data.error.message;
+            } else if (error.message) {
+                errorMessage += ': ' + error.message;
+            }
             console.error('Stripe payment error:', error);
             throw new HttpException('Payment processing failed: ' + error.message, HttpStatus.BAD_REQUEST);
         }

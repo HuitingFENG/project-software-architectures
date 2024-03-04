@@ -206,6 +206,7 @@ export class GatewayController {
         const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
         const paymentServiceUrl = this.configService.get('PAYMENT_SERVICE_URL');
         const stripeUrl = this.configService.get('STRIPE_URL');
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
         console.log("paymentServiceUrl: ", paymentServiceUrl);
 
         try {
@@ -225,6 +226,14 @@ export class GatewayController {
             }).toPromise();
             console.log("paymentResponse: ", paymentResponse);
             console.log("paymentResponse.data: ", paymentResponse.data);
+
+
+            // Update the session's restToPay to 0 after successful payment
+            await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
+                restToPay: 0
+            }).toPromise();
+            console.log(`Session ${sessionId} restToPay updated to 0`);
+
 
             await this.updateOrdersAfterPaymentForAllOrders(sessionId, paymentResponse.data);
             
