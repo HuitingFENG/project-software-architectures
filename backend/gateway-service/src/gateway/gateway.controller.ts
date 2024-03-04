@@ -1,4 +1,4 @@
-import { Controller, All, Req, Res, HttpStatus, UseGuards, HttpException, Body, Post, Get, Param, Patch, Put } from '@nestjs/common';
+import { Controller, All, Req, Res, HttpStatus, UseGuards, HttpException, Body, Post, Get, Param, Patch, Put, Delete } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
@@ -491,8 +491,86 @@ export class GatewayController {
 
 
 
+     // Route for adding a new product (accessible only by agents)
+     @Post('add-products-by-agent')
+     @UseGuards(AuthGuard('jwt')) 
+     async addProduct(@Req() req, @Body() productData: any): Promise<any> {
+        console.log("Add-products-by-agent route hit");
+        console.log("role: ", req.user.role);
+        if (req.user.role !== 'agent') {
+            throw new HttpException('Forbidden, because the management of products is only accessible for agents.', HttpStatus.FORBIDDEN);
+        }
+
+        const productCatalogServiceUrl = this.configService.get('PRODUCT_CATALOG_SERVICE_URL');
+        console.log("productCatalogServiceUrl: ", productCatalogServiceUrl);
+        console.log("productData: ", productData);
+
+        try {
+            const response = await this.httpService.post(`${productCatalogServiceUrl}/products/add`, productData).toPromise();
+            console.log("response.data: ", response.data);
+            return response.data;
+        } catch (error) {
+            throw new HttpException('Failed to add product', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Get('view-all-products')
+    @UseGuards(AuthGuard('jwt')) 
+    async viewAllProducts(@Req() req, @Body() productData: any): Promise<any> {
+       console.log("View-all-products route hit");
+
+       const productCatalogServiceUrl = this.configService.get('PRODUCT_CATALOG_SERVICE_URL');
+       console.log("productCatalogServiceUrl: ", productCatalogServiceUrl);
+       console.log("productData: ", productData);
+
+       try {
+           const response = await this.httpService.get(`${productCatalogServiceUrl}/products`, productData).toPromise();
+           console.log("response.data: ", response.data);
+           return response.data;
+       } catch (error) {
+           throw new HttpException('Failed to view all products', HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+   }
+
+    @Delete('delete-product-by-agent/number/:number')
+    @UseGuards(AuthGuard('jwt'))
+    async deleteProduct(@Req() req, @Param('number') number: number): Promise<any> {
+        console.log("Delete-product-by-agent route hit");
+        if (req.user.role !== 'agent') {
+            throw new HttpException('Forbidden, because the management of products is only accessible for agents.', HttpStatus.FORBIDDEN);
+        }
+
+        const productCatalogServiceUrl = this.configService.get('PRODUCT_CATALOG_SERVICE_URL');
+        try {
+            const response = await this.httpService.delete(`${productCatalogServiceUrl}/products/delete-by-number/${number}`).toPromise();
+            console.log("Product deleted successfully:", response.data);
+            return { message: 'Product deleted successfully' };
+        } catch (error) {
+            console.error("Failed to delete product:", error);
+            throw new HttpException('Failed to delete product', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
+
+    @Put('update-product-by-agent/number/:number')
+    @UseGuards(AuthGuard('jwt'))
+    async updateProduct(@Req() req, @Param('number') number: number, @Body() updateData: any): Promise<any> {
+        console.log("Update-product-by-agent route hit");
+        if (req.user.role !== 'agent') {
+            throw new HttpException('Forbidden, because the management of products is only accessible for agents.', HttpStatus.FORBIDDEN);
+        }
+
+        const productCatalogServiceUrl = this.configService.get('PRODUCT_CATALOG_SERVICE_URL');
+        try {
+            const response = await this.httpService.put(`${productCatalogServiceUrl}/products/update-by-number/${number}`, updateData).toPromise();
+            console.log("Product updated successfully:", response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Failed to update product:", error);
+            throw new HttpException('Failed to update product', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     
 
@@ -506,25 +584,6 @@ export class GatewayController {
 
 
 
-
-
-
-
-
-
-    // @Post('close-session')
-    // @UseGuards(AuthGuard('jwt'))
-    // async closeSession(@Body() body, @Req() req) {
-    //     console.log("Close-session route hit");
-    //     const { sessionId } = body;
-    //     const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
-    //     const closeSessionResponse = await this.httpService.put(`${sessionManagementServiceUrl}/sessions/${sessionId}`, {
-    //         status: 'closed'
-    //     }).toPromise();
-
-    //     return closeSessionResponse.data;
-    // }
-    
 
 
 

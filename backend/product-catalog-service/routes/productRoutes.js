@@ -14,10 +14,22 @@ const verifyAgent = require('../middleware/verifyAgent');
 //     next();
 // };
 
-// Endpoint to add a new product
-router.post('/add', authenticateToken, verifyAgent, async (req, res) => {
+// Endpoint to add a new product 
+// authenticateToken, verifyAgent, 
+router.post('/add', async (req, res) => {
   try {
-    const newProduct = new Product(req.body);
+    // const newProduct = new Product(req.body);
+
+    // Find the highest number in the current products
+    const lastProduct = await Product.findOne().sort({ number: -1 });
+
+    const newNumber = lastProduct ? lastProduct.number + 1 : 1; 
+
+    const newProduct = new Product({
+        ...req.body,
+        number: newNumber, 
+    });
+
     await newProduct.save();
     res.status(201).send({ product: newProduct, message: 'Product added successfully' });
   } catch (error) {
@@ -75,7 +87,8 @@ router.get('/category/:categoryName', async (req, res) => {
 });
 
 // PUT /products/:id to update a product by id
-router.put('/:id', authenticateToken, verifyAgent, async (req, res) => {
+// authenticateToken, verifyAgent,
+router.put('/:id', async (req, res) => {
     try {
       const product = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
       if (!product) {
@@ -88,7 +101,8 @@ router.put('/:id', authenticateToken, verifyAgent, async (req, res) => {
 });
   
 // DELETE /products/:id to delete a product by id
-router.delete('/:id', authenticateToken, verifyAgent, async (req, res) => {
+// authenticateToken, verifyAgent,
+router.delete('/:id', async (req, res) => {
     try {
       const product = await Product.findByIdAndDelete(req.params.id);
       if (!product) {
@@ -100,5 +114,32 @@ router.delete('/:id', authenticateToken, verifyAgent, async (req, res) => {
     }
 });
 
+
+
+// Update a product by its number
+router.put('/update-by-number/:number', async (req, res) => {
+  try {
+      const product = await Product.findOneAndUpdate({ number: req.params.number }, req.body, { new: true });
+      if (!product) {
+          return res.status(404).send({ message: 'Product not found' });
+      }
+      res.send({ product, message: 'Product updated successfully' });
+  } catch (error) {
+      res.status(400).send({ error: error.message });
+  }
+});
+
+// Delete a product by its number
+router.delete('/delete-by-number/:number', async (req, res) => {
+  try {
+      const product = await Product.findOneAndDelete({ number: req.params.number });
+      if (!product) {
+          return res.status(404).send({ message: 'Product not found' });
+      }
+      res.send({ message: 'Product deleted successfully' });
+  } catch (error) {
+      res.status(500).send({ error: error.message });
+  }
+});
 
 module.exports = router;
