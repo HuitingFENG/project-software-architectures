@@ -342,6 +342,131 @@ export class GatewayController {
 
     }
 
+    @Get('/check-all-details-of-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async checkAllSessionDetails(@Param('sessionId') sessionId: string): Promise<any> {
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+        const customerServiceUrl = this.configService.get('USER_SERVICE_URL'); 
+        const notificationServiceUrl = this.configService.get('NOTIFICATION_SERVICE_URL'); 
+
+        try {
+            // Fetch session details
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+
+            // Parallel requests to fetch details based on IDs
+            const orderDetailsPromises = session.orders.map(orderId =>
+                this.httpService.get(`${orderServiceUrl}/orders/${orderId}`).toPromise()
+            );
+            const customerDetailsPromises = session.customers.map(customerId =>
+                this.httpService.get(`${customerServiceUrl}/users/${customerId}`).toPromise() 
+            );
+            const notificationDetailsPromises = session.notifications.map(notificationId =>
+                this.httpService.get(`${notificationServiceUrl}/notifications/${notificationId}`).toPromise()
+            );
+
+            // Wait for all promises to resolve
+            const [orderDetails, customerDetails, notificationDetails] = await Promise.all([
+                Promise.all(orderDetailsPromises),
+                Promise.all(customerDetailsPromises),
+                Promise.all(notificationDetailsPromises),
+            ]);
+
+            // Combine and return details
+            return {
+                session: {
+                    ...session,
+                    orders: orderDetails.map(response => response.data),
+                    customers: customerDetails.map(response => response.data),
+                    notifications: notificationDetails.map(response => response.data),
+                }
+            };
+        } catch (error) {
+            throw new HttpException('Failed to fetch session details: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @Get('/check-all-customers-of-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async checkSessionCustomers(@Param('sessionId') sessionId: string): Promise<any> {
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const customerServiceUrl = this.configService.get('USER_SERVICE_URL');
+
+        try {
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+
+            const customerDetailsPromises = session.customers.map(customerId =>
+                this.httpService.get(`${customerServiceUrl}/users/${customerId}`).toPromise()
+            );
+
+            const customerDetails = await Promise.all(customerDetailsPromises);
+
+            return {
+                customers: customerDetails.map(response => response.data)
+            };
+        } catch (error) {
+            throw new HttpException('Failed to fetch customer details: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Get('/check-all-orders-of-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async checkSessionOrders(@Param('sessionId') sessionId: string): Promise<any> {
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const orderServiceUrl = this.configService.get('ORDER_MANAGEMENT_SERVICE_URL');
+
+        try {
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+
+            const orderDetailsPromises = session.orders.map(orderId =>
+                this.httpService.get(`${orderServiceUrl}/orders/${orderId}`).toPromise()
+            );
+
+            const orderDetails = await Promise.all(orderDetailsPromises);
+
+            return {
+                orders: orderDetails.map(response => response.data)
+            };
+        } catch (error) {
+            throw new HttpException('Failed to fetch order details: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Get('/check-all-notifications-of-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async checkSessionNotifications(@Param('sessionId') sessionId: string): Promise<any> {
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        const notificationServiceUrl = this.configService.get('NOTIFICATION_SERVICE_URL');
+
+        try {
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+
+            const notificationDetailsPromises = session.notifications.map(notificationId =>
+                this.httpService.get(`${notificationServiceUrl}/notifications/${notificationId}`).toPromise()
+            );
+
+            const notificationDetails = await Promise.all(notificationDetailsPromises);
+
+            return {
+                notifications: notificationDetails.map(response => response.data)
+            };
+        } catch (error) {
+            throw new HttpException('Failed to fetch notification details: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
+
+
+
+    
+
 
 
 
