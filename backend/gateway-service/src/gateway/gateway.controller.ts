@@ -71,6 +71,7 @@ export class GatewayController {
         }
     }
 
+
     @Put('/add-members-into-session/:sessionId')
     @UseGuards(AuthGuard('jwt'))
     async addMembersIntoSession(@Param('sessionId') sessionId: string, @Body() updateBody: any, @Req() req) {
@@ -244,6 +245,8 @@ export class GatewayController {
             await this.createNotificationAndUpdateSession(sessionId, invoiceDescription, email);
 
             await this.updateOrdersAfterPaymentForAllOrders(sessionId, paymentResponse.data);
+
+            await this.updateSessionStatusIfPaidOff(sessionId);
             
             return paymentResponse.data;
         } catch (error) {
@@ -323,6 +326,7 @@ export class GatewayController {
             await Promise.all(updatePromises);
             console.log("updatePromises: ", updatePromises);
 
+            await this.updateSessionStatusIfPaidOff(sessionId);
 
             return { message: "Orders updated successfully",  myOrders, totalPrice };
 
@@ -384,6 +388,31 @@ export class GatewayController {
             };
         } catch (error) {
             throw new HttpException('Failed to fetch session details: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Get('/check-bill-of-session/:sessionId')
+    @UseGuards(AuthGuard('jwt'))
+    async checkBillOfSession(@Param('sessionId') sessionId: string): Promise<any> {
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+        // const customerServiceUrl = this.configService.get('USER_SERVICE_URL');
+
+        try {
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+
+            // const customerDetailsPromises = session.customers.map(customerId =>
+            //     this.httpService.get(`${customerServiceUrl}/users/${customerId}`).toPromise()
+            // );
+
+            // const customerDetails = await Promise.all(customerDetailsPromises);
+
+            return {
+                // customers: customerDetails.map(response => response.data)
+                session
+            };
+        } catch (error) {
+            throw new HttpException('Failed to fetch customer details: ' + error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -483,18 +512,18 @@ export class GatewayController {
 
 
 
-    @Post('close-session')
-    @UseGuards(AuthGuard('jwt'))
-    async closeSession(@Body() body, @Req() req) {
-        console.log("Close-session route hit");
-        const { sessionId } = body;
-        const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
-        const closeSessionResponse = await this.httpService.put(`${sessionManagementServiceUrl}/sessions/${sessionId}`, {
-            status: 'closed'
-        }).toPromise();
+    // @Post('close-session')
+    // @UseGuards(AuthGuard('jwt'))
+    // async closeSession(@Body() body, @Req() req) {
+    //     console.log("Close-session route hit");
+    //     const { sessionId } = body;
+    //     const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+    //     const closeSessionResponse = await this.httpService.put(`${sessionManagementServiceUrl}/sessions/${sessionId}`, {
+    //         status: 'closed'
+    //     }).toPromise();
 
-        return closeSessionResponse.data;
-    }
+    //     return closeSessionResponse.data;
+    // }
     
 
 
@@ -598,6 +627,27 @@ export class GatewayController {
         }
     }
     
+    
+    private async updateSessionStatusIfPaidOff(sessionId: string): Promise<void> {
+        const sessionServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
+    
+        try {
+            const sessionResponse = await this.httpService.get(`${sessionServiceUrl}/sessions/${sessionId}`).toPromise();
+            const session = sessionResponse.data;
+    
+            // Check if restToPay is 0
+            if (session.restToPay === 0) {
+                // Update the session's status to 'vacant'
+                await this.httpService.put(`${sessionServiceUrl}/sessions/${sessionId}`, {
+                    status: 'vacant'
+                }).toPromise();
+                console.log(`Session ${sessionId} status updated to 'vacant'`);
+            }
+        } catch (error) {
+            console.error(`Failed to update session status for session ${sessionId}: ${error.message}`);
+    
+        }
+    }
     
 
 
