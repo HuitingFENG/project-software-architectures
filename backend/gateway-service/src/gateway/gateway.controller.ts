@@ -367,8 +367,6 @@ export class GatewayController {
             description: description,
         }));
         console.log("paymentResponse: ", paymentResponse);
-        // const paymentRecordId = paymentResponse.data.paymentRecord.id;
-        // console.log("paymentRecordId: ", paymentRecordId);
 
         // Assuming paymentResponse.data is the structure shared in your message
         const paymentRecordObject = paymentResponse.data.find(item => item.paymentRecord);
@@ -381,27 +379,6 @@ export class GatewayController {
         await this.createNotificationAndUpdateSession(sessionId, invoiceDescription, email);
 
         // Step 3: Update all orders in the session with the payment record
-        // await Promise.all(session.orders.map(orderId => 
-        //     this.httpService.patch(`${orderServiceUrl}/orders/${orderId}`, {
-        //         $push: { payments: returnedPaymentId }, status: 'paid',
-        //     }).toPromise()
-        // ));
-
-
-
-
-        // const updatePromises = session.orders.map(order => {
-        //     const existingPayments = Array.isArray(order.payments) ? order.payments : [];
-
-        //     this.httpService.patch(`${orderServiceUrl}/orders/${order.id}`, {
-        //         status: 'paid',
-        //         payments: [...existingPayments, returnedPaymentId], 
-        //     }).toPromise()
-        // });
-        // await Promise.all(updatePromises);
-        // console.log("updatePromises: ", updatePromises);
-
-
         const ordersResponse = await this.httpService.get(`${orderServiceUrl}/orders/session/${sessionId}`).toPromise();
         const orders = ordersResponse.data;
 
@@ -417,11 +394,6 @@ export class GatewayController {
         });
 
         console.log("Orders updated successfully");
-
-
-
-
-
 
         // Step 4: Update session's restToPay
         const newRestToPay = session.restToPay - paymentDto.amount;
@@ -693,13 +665,13 @@ export class GatewayController {
 
 
 
-
-
-
-
     @All('*')
     async handleAllRequests(@Req() req: Request, @Res() res: Response) {
         const serviceUrl = this.determineServiceUrl(req);
+
+        if (req.user.role !== 'agent') {
+            throw new HttpException('Forbidden, because all services of backend are only accessible for agents, and all agents can see all databases of all bowling parks.', HttpStatus.FORBIDDEN);
+        }
 
         try {
         const serviceResponse = await this.httpService.request({
@@ -785,7 +757,6 @@ export class GatewayController {
             console.log("Notification created and session updated successfully");
         } catch (error) {
             console.error("Failed to create notification or update session:", error.message);
-            // Handle errors appropriately
         }
     }
     
@@ -810,53 +781,5 @@ export class GatewayController {
     
         }
     }
-    
-
-
-
-
-    // @Post('login')
-    // async login(@Body() credentials: any, @Res() res: Response) {
-    //     const userServiceUrl = this.configService.get('USER_SERVICE_URL');
-    //     console.log('UserService URL:', userServiceUrl);
-
-    //     try {
-            
-    //         const response = await this.httpService.post(`${userServiceUrl}/users/login`, credentials).toPromise();
-    //         const token = response.data.token; 
-    //         console.log("Token: ", token);
-    //         return res.status(HttpStatus.OK).json({ token });
-
-    //     } catch (error) {
-    //         console.error('Login error:', error);
-    //         return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'Login failed', error: error.response.data });
-    //     }
-    // }
-
-    // @Post('start-session')
-    // @UseGuards(AuthGuard('jwt'))
-    // async startSession(@Body() body, @Req() req, @Res() res: Response) {
-    //     console.log("TEST for startSession");
-    //     const { qrCode } = body;
-    //     const sessionManagementServiceUrl = this.configService.get('SESSION_MANAGEMENT_SERVICE_URL');
-    //     try {
-    //         const validAlleyResponse = await this.httpService.get(`${sessionManagementServiceUrl}/sessions/getCatalogForQRCode`, { params: { qrCode } }).toPromise();
-    //         if (!validAlleyResponse.data.isValid) {
-    //             throw new HttpException('Invalid QR Code', HttpStatus.BAD_REQUEST);
-    //         }
-
-    //         const sessionResponse = await this.httpService.post(`${process.env.SESSION_MANAGEMENT_SERVICE_URL}/sessions/add`, {
-    //             customerId: [ req.user._id ],
-    //             qrCode,
-    //             orders: [], // Assume an empty orders array for now
-    //             status: 'active'
-    //         }).toPromise();
-
-    //         return res.status(HttpStatus.OK).json(sessionResponse.data);
-
-    //     } catch (error) {
-    //         return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Could not start session', error: error.response.data });
-    //     }
-    // }
 
 }
