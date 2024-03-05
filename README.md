@@ -24,13 +24,117 @@ To tackle the Software Architectures Project with a focus on microservices archi
 ```
 git clone https://github.com/HuitingFENG/project-software-architectures.git
 ```
+- install mongodb, postgresql according the OS
+![image](/images/2.png)
+- create databases and tables for different services
+```
+brew services list
+mongosh
+use userService
+db.createCollection("users")
+use notificationService
+db.createCollection("notifications")
+use productService
+db.createCollection("products")
+use sessionService
+db.createCollection("sessions")
+show dbs
+exit
+psql postgres
+CREATE USER root WITH PASSWORD 'root';
+ALTER USER root WITH SUPERUSER;
+\q
+psql -U root -d postgres
+CREATE DATABASE orderservice;
+CREATE DATABASE paymentservice;
+\l
+exit
+psql -U root -d paymentservice
+\dt
+\d Payments
+\q
+psql -U root -d orderservice
+\dt
+\d orders
+```
+![image](/images/3.png)
+![image](/images/4.png)
+- go to each service's folder to run the service (each service holds a terminal)
+```
+cd frontend
+npm i
+npm run dev
+```
+```
+cd ../backend/user-service
+npm i
+npm run dev
+```
+```
+cd ../product-catalog-service
+npm i
+npm run dev
+```
+```
+cd ../order-management-service
+npm i
+npm run dev
+```
+```
+cd ../payment-service
+npm i
+npm run start:dev
+```
+```
+cd ../notification-service
+npm i
+npm run dev
+```
+```
+cd ../session-management-service
+npm i
+npm run dev
+```
+```
+cd ../gateway-service
+npm i
+npm run start:dev
+```
+- stay on the gateway-service terminal 
+![image](/images/5.png)
+- import the postman-collection and the environment files which are located on the root of the project into the Postman. If fail to import environment file then should manually set the environment values.
+![image](/images/6.png)
+- do the manipulations by checking the videos as follow steps
+
 
 ### Video demo (customers & agents)
 ```
 https://efrei365net-my.sharepoint.com/:f:/g/personal/huiting_feng_efrei_net/EmilXigp4VBLoPTKezLBx4EBExhLeQVi974XcFKZIY2_yg?e=3l6vUx
 ```
-
 A Session model could have a list of customerIds and a list of orderIds. The session begins when a customer scans the QR code and is marked as active. The session can either be for a single customer or a group of customers who are invited/added on the session by the owner of alley. Each Order would be associated with a customerId and a sessionId, allowing for tracking individual orders within a shared session.
+
+- check video 1: log in with agent1 account + manage products (add + remove + update) products (3 categories: food, beverage, brunch) on the product-catalog + view all databases of backend (users/products/orders/payments/notifications/sessions) + customer1 login and try to view all databases of backend but fail because of the authentification. The registration of users should be done at this step, because the gateway-service don't have implemented the registration router yet, all users' accounts and all products should be prepared before doing the steps on the video 2/3/4/5. The registration of users will be on the user-service (port 3000), but the creation of products will be on the gateway-service (port 3006). add users (3 customers + 2 agents), the qrCode is defined at the agent registration and the qrCode is unique for each alley. For simplicity, we define that the products are the same for all bowling park. 2 agents means 40 qrCode, each agent maintains 1 bowling park where has 20 alleys. one qrCode can have many sessions. one session will have 3 status: vacant, active, closed. If session is active, it means this alley (unique qrCode) is being used by others. Customer needs to change to play on other alley.
+```
+https://efrei365net-my.sharepoint.com/:v:/g/personal/huiting_feng_efrei_net/EYXF6MLebtZFh4Ut0hyqMzoBOrYpDZenuibyBLEcsOiK3A?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=wGxBXO
+```
+- check video 2: log in with customer1 account + start a session with qrCode1 + view product catalog of the current bowling park + make 2 orders check bill of this sessions + pay all orders + check situation of bill of this session + check notifications/invoices of this session about all payments + system close the session directly automatically after all payment done and status of this session becomes closed.
+```
+https://efrei365net-my.sharepoint.com/:v:/g/personal/huiting_feng_efrei_net/ETWi0IpNACJNjq4tBDNmQ-EBkAjHOZblivRuqH8LPdRyzQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=gTq48a
+```
+- check video 3: log in with customer2 account + start a session with qrCode1 + owner customer2 invite customer3 as a group into the same session + customer2 make 2 orders into the session + customer3 make 3 orders + owner customer2 check bill of this session + owner customer2 payed his owner orders + customer3 log in account + customer3 pay his own orders + customer3 check bill of this session + customer3 check notifications/invoices of this session about all payments + system close the session directly automatically after all payment done and status of this session becomes closed.
+```
+https://efrei365net-my.sharepoint.com/:v:/g/personal/huiting_feng_efrei_net/Eb2osBUSsnFCgbILyISDjG4Byz9ykSfru3xPORWIhGmCDw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=Q3RiIn
+```
+- check video 4: log in with customer1 account + start a session with qrCode2 + owner customer1 invite customer2 and customer3 as a group into the same session + customer1 make 2 orders + customer2 make 2 orders + customer3 make 2 orders + owner customer1 pay partial payment + check bill of this session + customer2 login + customer2 check the restToPay of this bill + customer2 pay the rest of amount + customer2 check this bill of this session + customer2 check notifications/invoices of this session about all payments + customer1 login his account to check the notifications + system close the session directly automatically after all payment done and status of this session becomes closed.
+```
+
+```
+- check video 5: others operations on different services. All users can see the whole informations (orders, customers, notifications, payments) of the same session. One session is linked to one group.
+```
+https://efrei365net-my.sharepoint.com/:v:/g/personal/huiting_feng_efrei_net/EdB0XMIvcZhKhghvM17L4-cBjZp0eBfsKEuy35YEexa_eQ?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=WWx5Y2
+```
+
+
 
 
 ### Architectural Diagram

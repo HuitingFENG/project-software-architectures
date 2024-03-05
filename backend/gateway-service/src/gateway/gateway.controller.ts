@@ -8,9 +8,21 @@ import { Observable, catchError, forkJoin, lastValueFrom, map, mergeMap, of } fr
 import { JwtService } from '@nestjs/jwt';
 import Stripe from 'stripe';
 
+
+interface Order {
+    id: any; 
+}
+
+interface orders {
+    order: Order;
+}
+
 @Controller()
 export class GatewayController {
+    // orders: orders;
+    
     stripe: any;
+
     constructor(
         private httpService: HttpService,
         private configService: ConfigService,
@@ -188,7 +200,7 @@ export class GatewayController {
                 );
                 return forkJoin(orderRequests);
             }),
-            map(orders => {
+            map((orders: any[]) => {
                 const myOrders = orders.filter(order => order.customers.some(customer => customer.id === customerId));
                 return myOrders;
             }),
